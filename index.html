@@ -1,284 +1,386 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Nikhil Deshpande — Digital Analytics Specialist</title>
+<meta name="description" content="Architecting the Source of Truth for Global Brands | GA4 | GTM | Data Strategy"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:rgba(99,102,241,.4);color:#fff}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(99,102,241,.3);border-radius:3px}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#fff;overflow-x:hidden}
 
-const SECS = ["hero","about","experience","projects","testimonials","skills","contact"];
-const NAV = {hero:"Home",about:"About",experience:"Work",projects:"Projects",testimonials:"Kind Words",skills:"Skills",contact:"Contact"};
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:.6}}
+@keyframes gshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes statusPulse{0%,100%{opacity:.4}50%{opacity:1}}
 
-const SR = ({children,delay=0,dir="up"}) => {
-  const r=useRef(null);const[v,setV]=useState(false);
-  useEffect(()=>{const el=r.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting){setTimeout(()=>setV(true),delay);o.unobserve(el);}},{threshold:0.1});o.observe(el);return()=>o.disconnect();},[delay]);
-  const t={up:"translateY(50px)",down:"translateY(-50px)",left:"translateX(50px)",right:"translateX(-50px)"};
-  return <div ref={r} style={{opacity:v?1:0,transform:v?"translate(0,0)":t[dir],transition:"opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1)"}}>{children}</div>;
-};
+.reveal{opacity:0;transform:translateY(42px);transition:opacity .78s cubic-bezier(.16,1,.3,1),transform .78s cubic-bezier(.16,1,.3,1)}
+.reveal.vis{opacity:1;transform:translate(0,0)}
+.reveal-l{opacity:0;transform:translateX(42px);transition:opacity .78s cubic-bezier(.16,1,.3,1),transform .78s cubic-bezier(.16,1,.3,1)}
+.reveal-l.vis{opacity:1;transform:translate(0,0)}
+.reveal-r{opacity:0;transform:translateX(-42px);transition:opacity .78s cubic-bezier(.16,1,.3,1),transform .78s cubic-bezier(.16,1,.3,1)}
+.reveal-r.vis{opacity:1;transform:translate(0,0)}
 
-const G = "linear-gradient(135deg,#f59e0b,#f97316)";
-const G2 = "linear-gradient(135deg,#6366f1,#818cf8)";
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:15px 36px;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+nav.scrolled{background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-links{display:flex;gap:26px}
+.nav-links a{font-size:12px;font-weight:400;color:rgba(255,255,255,.5);text-decoration:none;text-transform:uppercase;letter-spacing:1.5px;transition:color .3s;position:relative;padding-bottom:4px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:#818cf8;transition:all .3s;transform:translateX(-50%)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-links a.active{color:#818cf8;font-weight:600}
+.logo{font-size:22px;font-weight:900;cursor:pointer;letter-spacing:-1px;text-decoration:none}
+.logo span:nth-child(1){color:#818cf8}
+.logo span:nth-child(2){color:#fff}
+.logo span:nth-child(3){color:#6366f1}
 
-export default function App(){
-  const[sY,setSY]=useState(0);
-  const[act,setAct]=useState("hero");
-  const[mobNav,setMobNav]=useState(false);
-  const cRef=useRef(null);
+.particles{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.45) 0%,transparent 70%)}
+.orb1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.08) 0%,transparent 70%);top:-120px;right:-120px;animation:pulse 7s ease-in-out infinite}
+.orb2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.06) 0%,transparent 70%);bottom:100px;left:-100px;animation:pulse 9s ease-in-out infinite}
 
-  const onScroll=useCallback(()=>{
-    const el=cRef.current;if(!el)return;setSY(el.scrollTop);
-    const ss=SECS.map(id=>{const s=document.getElementById(id);return s?{id,top:s.offsetTop-220}:null}).filter(Boolean);
-    for(let i=ss.length-1;i>=0;i--){if(el.scrollTop>=ss[i].top){setAct(ss[i].id);break;}}
-  },[]);
+section{position:relative;z-index:1}
+.container{max-width:700px;margin:0 auto;width:100%;padding:0 24px}
 
-  useEffect(()=>{const el=cRef.current;if(el)el.addEventListener("scroll",onScroll,{passive:true});return()=>el?.removeEventListener("scroll",onScroll);},[onScroll]);
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 24px;position:relative}
+.ring1{position:absolute;width:400px;height:400px;border:1px solid rgba(99,102,241,.08);border-top:1px solid rgba(99,102,241,.35);border-radius:50%;animation:spin 22s linear infinite}
+.ring2{position:absolute;width:290px;height:290px;border:1px solid rgba(139,92,246,.06);border-bottom:1px solid rgba(139,92,246,.28);border-radius:50%;animation:spin 16s linear infinite reverse}
+.status-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:24px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);font-size:12px;font-weight:500;color:#a5b4fc;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#818cf8;animation:statusPulse 2s infinite}
+.hero h1{font-size:clamp(36px,5.8vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+.hero h1 .gradient{background:linear-gradient(135deg,#fff 0%,#a5b4fc 50%,#6366f1 100%);background-size:200% 200%;animation:gshift 5s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:17px;color:rgba(255,255,255,.45);max-width:470px;line-height:1.75;font-weight:300}
+.hero p .hl{color:#818cf8;font-weight:600}
+.btn-row{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+.btn-primary{padding:13px 30px;border-radius:50px;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(99,102,241,.3);text-decoration:none;display:inline-block}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
+.btn-secondary{padding:13px 30px;border-radius:50px;background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:500;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-block}
+.btn-secondary:hover{border-color:rgba(99,102,241,.4);color:#fff}
+.scroll-hint{position:absolute;bottom:36px;display:flex;flex-direction:column;align-items:center;animation:float 2.5s ease-in-out infinite}
+.scroll-hint span{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px}
+.scroll-hint div{width:1px;height:28px;background:linear-gradient(to bottom,rgba(99,102,241,.45),transparent)}
 
-  const go=(id)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth"});setMobNav(false);};
+/* SECTION HEADERS */
+.sec-label{font-size:11px;color:#818cf8;letter-spacing:3px;text-transform:uppercase;font-weight:600}
+.sec-title{font-size:34px;font-weight:800;margin-top:8px;letter-spacing:-1px}
+.sec-title .hl{color:#818cf8}
 
-  const skills=["GA4","Google Tag Manager","Server-Side GTM","Meta CAPI","SQL","Tableau","Looker Studio","Supermetrics","n8n","Shopify Analytics","Facebook Ads","Google Ads","UTM Governance","Attribution Modeling","Data Pipelines","BigQuery","Audience Segmentation","CRM Analytics"];
+/* ABOUT */
+.about-section{min-height:75vh;display:flex;align-items:center;justify-content:center;padding:100px 24px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px}
+.stat-card{text-align:center;padding:22px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:12px;transition:all .3s}
+.stat-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-3px)}
+.stat-num{font-size:30px;font-weight:800;background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
 
-  const projects=[
-    {title:"GA4 Migration at Scale",desc:"Led the end-to-end migration from Universal Analytics to GA4 for multiple national ecommerce retailers, ensuring zero data loss and seamless tracking continuity across all digital properties.",tags:["GA4","GTM","Data Migration"],metric:"Zero Data Loss"},
-    {title:"Revenue Reconciliation Engine",desc:"Built automated systems to identify and fix Shopify revenue discrepancies across multi-channel attribution, decoding complex customer journeys for accurate reporting.",tags:["Shopify","Attribution","Looker Studio"],metric:"Revenue Accuracy ↑"},
-    {title:"Server-Side Tracking Architecture",desc:"Architected and deployed server-side GTM with Meta CAPI integration, creating clean data pipelines that improved ad signal quality and campaign optimization.",tags:["Server GTM","Meta CAPI","Data Architecture"],metric:"Signal Quality ↑"},
-    {title:"Automated Reporting Dashboards",desc:"Designed scalable, automated dashboards in Looker Studio and Tableau that translate complex datasets into clear, actionable insights for global brand stakeholders.",tags:["Tableau","Looker Studio","Supermetrics","n8n"],metric:"50+ Brands Served"},
-  ];
+/* EXPERIENCE */
+.exp-section{padding:100px 24px;display:flex;justify-content:center}
+.exp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px 14px 14px 4px;padding:26px 28px;margin-bottom:22px;backdrop-filter:blur(10px);transition:all .3s;cursor:default}
+.exp-card:hover{transform:translateX(6px)}
+.exp-card.accent-1{border-left:3px solid #818cf8}.exp-card.accent-1:hover{border-left-color:#a5b4fc;box-shadow:0 8px 30px rgba(99,102,241,.08)}
+.exp-card.accent-2{border-left:3px solid #6366f1}.exp-card.accent-2:hover{border-left-color:#818cf8;box-shadow:0 8px 30px rgba(99,102,241,.06)}
+.exp-card.accent-3{border-left:3px solid #a78bfa}.exp-card.accent-3:hover{border-left-color:#c4b5fd;box-shadow:0 8px 30px rgba(167,139,250,.06)}
+.exp-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.exp-card h3{margin:0;font-size:19px;font-weight:700;color:#fff}
+.exp-company{margin:3px 0 0;font-size:14px;color:#818cf8;font-weight:600}
+.exp-period{font-size:12px;color:rgba(255,255,255,.45);font-family:monospace}
+.exp-loc{font-size:11px;color:rgba(255,255,255,.3)}
+.exp-card ul{margin:14px 0 0;padding-left:16px;color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.75}
+.exp-card li{margin-bottom:3px}
 
-  const testimonials=[
-    {name:"Shubham Shukla",role:"SEO Assistant, Pattern Australia",quote:"Nikhil is an exceptional analytics professional. His in-depth knowledge of Google Analytics and his remarkable ability to build insightful dashboards in Looker Studio make him a true expert. He simplifies complex problems and explains solutions in a way everyone can understand. He's truly a one-man army when it comes to analytics and tracking — always eager to learn, explore new tools, and automate processes using AI."},
-    {name:"Mikhil Khattar",role:"Head - Marketing Analytics, Sumeru Inc",quote:"Nikhil's skills in web analytics helped boost user experience and ROI on several projects at Sumeru Inc. His analytical thinking and teamwork made a real impact, especially in using data to address complex challenges. He works well with others and is a great fit for roles that require strong data analysis and problem-solving."},
-    {name:"Katie McKelvie",role:"Search & Digital Experience Manager, Royal Canin",quote:"Nikhil is an excellent worker and helps provide strategic advice for the optimum analytical setup. He's a strong communicator that can explain complex tracking systems in simple terms. He led a number of projects at Pattern, particularly during the intense switch to GA4 that helped set up many national ecommerce retailers for success. He would be an asset to any team."},
-  ];
+/* PROJECTS */
+.proj-section{padding:100px 24px;display:flex;justify-content:center}
+.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.proj-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:26px 24px;transition:all .35s;cursor:default}
+.proj-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-5px);box-shadow:0 14px 36px rgba(99,102,241,.07)}
+.proj-metric{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(99,102,241,.1);color:#a5b4fc;font-size:11.5px;font-weight:600;margin-bottom:12px}
+.proj-card h3{font-size:17px;font-weight:700;color:#fff;margin:0 0 10px}
+.proj-card p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px}
+.proj-tags{display:flex;flex-wrap:wrap;gap:5px}
+.proj-tag{padding:3px 9px;border-radius:20px;background:rgba(99,102,241,.08);color:#a5b4fc;font-size:10.5px;font-weight:500}
 
-  const particles=Array.from({length:14},(_,i)=>({w:5+Math.random()*14,l:`${Math.random()*100}%`,t:`${Math.random()*100}%`,o:0.12+Math.random()*0.25,sp:2.5+Math.random()*4,d:Math.random()*3}));
+/* TESTIMONIALS */
+.test-section{padding:100px 24px;display:flex;justify-content:center}
+.test-card{background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:16px;padding:28px 26px;margin-bottom:18px;position:relative;transition:all .3s}
+.test-card:hover{border-color:rgba(99,102,241,.25);transform:translateX(4px)}
+.test-quote-mark{font-size:52px;color:rgba(99,102,241,.15);font-family:Georgia,serif;line-height:1;position:absolute;top:10px;left:18px}
+.test-card blockquote{font-size:14px;color:rgba(255,255,255,.6);line-height:1.8;font-style:italic;margin-bottom:16px;padding-top:10px}
+.test-author{display:flex;align-items:center;gap:12px}
+.test-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.test-name{font-size:14px;font-weight:600;color:#fff}
+.test-role{font-size:12px;color:rgba(255,255,255,.38)}
 
-  return(
-    <div ref={cRef} style={{height:"100vh",overflowY:"auto",overflowX:"hidden",background:"#08080d",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",color:"#fff",position:"relative"}}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        ::selection{background:rgba(245,158,11,0.3);color:#fff}
-        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(245,158,11,0.25);border-radius:3px}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
-        @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.6}}
-        @keyframes gshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .navlink{position:relative;padding-bottom:4px}
-        .navlink::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:#f59e0b;transition:all .3s;transform:translateX(-50%)}
-        .navlink:hover::after,.navlink.active::after{width:100%}
-      `}</style>
+/* SKILLS */
+.skills-section{padding:100px 24px;display:flex;justify-content:center}
+.skill-pill{display:inline-block;padding:9px 18px;border-radius:50px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.18);color:#a5b4fc;font-size:13px;font-weight:500;margin:0 8px 10px 0;transition:all .3s;cursor:default}
+.skill-pill:hover{background:rgba(99,102,241,.18);transform:translateY(-3px) scale(1.04);box-shadow:0 6px 18px rgba(99,102,241,.12)}
 
-      {/* NAV */}
-      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"14px 36px",display:"flex",justifyContent:"space-between",alignItems:"center",background:sY>50?"rgba(8,8,13,0.9)":"transparent",backdropFilter:sY>50?"blur(20px)":"none",borderBottom:sY>50?"1px solid rgba(255,255,255,0.05)":"none",transition:"all .4s"}}>
-        <div onClick={()=>go("hero")} style={{fontSize:22,fontWeight:900,cursor:"pointer",letterSpacing:-1}}>
-          <span style={{color:"#f59e0b"}}>N</span><span style={{color:"#fff"}}>D</span><span style={{color:"#6366f1"}}>.</span>
-        </div>
-        <div style={{display:"flex",gap:24}}>
-          {SECS.map(s=>(
-            <span key={s} className={`navlink ${act===s?"active":""}`} onClick={()=>go(s)} style={{fontSize:12,fontWeight:act===s?600:400,color:act===s?"#f59e0b":"rgba(255,255,255,0.5)",cursor:"pointer",textTransform:"uppercase",letterSpacing:1.5,transition:"color .3s"}}>{NAV[s]}</span>
-          ))}
-        </div>
-      </nav>
+/* CONTACT */
+.contact-section{padding:100px 24px 50px;display:flex;justify-content:center}
+.contact-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.contact-btn{padding:13px 26px;border-radius:50px;font-size:13.5px;font-weight:600;text-decoration:none;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.contact-btn.email{background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;box-shadow:0 4px 18px rgba(99,102,241,.25)}
+.contact-btn.phone{background:rgba(99,102,241,.08);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+.contact-btn.phone:hover{border-color:rgba(99,102,241,.5);transform:translateY(-2px)}
+.contact-btn.linkedin{background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1);font-weight:500}
+.contact-btn.linkedin:hover{border-color:rgba(99,102,241,.4);color:#a5b4fc}
+.contact-btn:hover{transform:translateY(-2px)}
 
-      {/* PARTICLES */}
-      <div style={{position:"fixed",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
-        {particles.map((p,i)=><div key={i} style={{position:"absolute",width:p.w,height:p.w,borderRadius:"50%",background:"radial-gradient(circle,rgba(245,158,11,0.5) 0%,transparent 70%)",left:p.l,top:p.t,opacity:p.o,transform:`translateY(${-sY*(0.04+i*0.007)}px)`,animation:`float ${p.sp}s ease-in-out infinite`,animationDelay:`${p.d}s`}}/>)}
-        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(245,158,11,0.06) 0%,transparent 70%)",top:-120,right:-120,transform:`translateY(${-sY*0.12}px)`,animation:"pulse 7s ease-in-out infinite"}}/>
-        <div style={{position:"absolute",width:400,height:400,borderRadius:"50%",background:"radial-gradient(circle,rgba(99,102,241,0.05) 0%,transparent 70%)",bottom:100,left:-100,transform:`translateY(${-sY*0.08}px)`,animation:"pulse 9s ease-in-out infinite"}}/>
+footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05);text-align:center;color:rgba(255,255,255,.2);font-size:12px}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero h1{font-size:36px}
+  .stats-grid{grid-template-columns:1fr}
+  .proj-grid{grid-template-columns:1fr}
+  .exp-header{flex-direction:column}
+  .contact-btns{flex-direction:column;align-items:center}
+  nav{padding:15px 20px}
+  .sec-title{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="logo"><span>N</span><span>D</span><span>.</span></a>
+  <div class="nav-links">
+    <a href="#hero" data-section="hero">Home</a>
+    <a href="#about" data-section="about">About</a>
+    <a href="#experience" data-section="experience">Work</a>
+    <a href="#projects" data-section="projects">Projects</a>
+    <a href="#testimonials" data-section="testimonials">Kind Words</a>
+    <a href="#skills" data-section="skills">Skills</a>
+    <a href="#contact" data-section="contact">Contact</a>
+  </div>
+</nav>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="ring1" id="ring1"></div>
+  <div class="ring2" id="ring2"></div>
+  <div class="reveal" style="transition-delay:.15s">
+    <div class="status-badge"><span class="status-dot"></span>Available for opportunities</div>
+  </div>
+  <div class="reveal" style="transition-delay:.3s">
+    <h1>Hi, I'm <span class="gradient">Nikhil</span></h1>
+  </div>
+  <div class="reveal" style="transition-delay:.5s">
+    <p>I architect the <span class="hl">Source of Truth</span> for global e-commerce brands — turning messy data into clear, profitable decisions.</p>
+  </div>
+  <div class="reveal btn-row" style="transition-delay:.65s">
+    <a href="#projects" class="btn-primary">View Projects</a>
+    <a href="#contact" class="btn-secondary">Get In Touch</a>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="reveal"><span class="sec-label">About</span>
+      <h2 class="sec-title">Data-Led. <span class="hl">Growth-Focused.</span></h2></div>
+    <div class="reveal" style="transition-delay:.15s">
+      <p style="font-size:15.5px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:22px">I'm a Digital Marketing & Analytics Specialist at <span style="color:#818cf8;font-weight:600">Pattern®</span>, helping global eCommerce brands build trustworthy, actionable data systems that power smarter marketing decisions.</p>
+    </div>
+    <div class="reveal" style="transition-delay:.25s">
+      <p style="font-size:15.5px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:16px">I specialize in campaign analytics, audience data validation, and marketing measurement — ensuring accuracy across tracking, segmentation, attribution, and reporting.</p>
+    </div>
+    <div class="reveal" style="transition-delay:.35s">
+      <p style="font-size:14px;line-height:1.8;color:rgba(255,255,255,.38);margin-top:16px;font-style:italic">When I'm not untangling data layers or reconciling revenue discrepancies, you'll find me on my motorcycle chasing the perfect corner.</p>
+    </div>
+    <div class="reveal stats-grid" style="transition-delay:.45s">
+      <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">Years Experience</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Companies</div></div>
+      <div class="stat-card"><div class="stat-num">50+</div><div class="stat-label">Brands Served</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="exp-section" id="experience">
+  <div class="container">
+    <div class="reveal"><span class="sec-label">Experience</span>
+      <h2 class="sec-title" style="margin-bottom:36px">Where I've Made <span class="hl">Impact</span></h2></div>
+
+    <div class="reveal-l exp-card accent-1" style="transition-delay:.1s">
+      <div class="exp-header"><div><h3>Digital Marketing Analyst</h3><p class="exp-company">Pattern®</p></div><div style="text-align:right"><span class="exp-period">Sep 2024 — Present</span><br/><span class="exp-loc">Pune, India</span></div></div>
+      <ul><li>Architect custom tracking via GA4, Web/Server GTM, and Meta CAPI</li><li>Deep-dive audits to fix broken data layers & Shopify revenue discrepancies</li><li>Automate data pipelines using n8n, optimize queries in Supermetrics</li><li>Build scalable dashboards in Looker Studio & Tableau</li></ul>
+    </div>
+
+    <div class="reveal-l exp-card accent-2" style="transition-delay:.2s">
+      <div class="exp-header"><div><h3>Web Analyst</h3><p class="exp-company">Sumeru Global Technologies</p></div><div style="text-align:right"><span class="exp-period">Mar 2022 — Sep 2024</span><br/><span class="exp-loc">Bengaluru, India</span></div></div>
+      <ul><li>Led end-to-end UA to GA4 migration with zero data loss</li><li>Architected Google Tags, Meta pixels & custom event tracking via GTM</li><li>Optimized high-performing Facebook Ad campaigns, maximizing ROAS</li></ul>
+    </div>
+
+    <div class="reveal-l exp-card accent-3" style="transition-delay:.3s">
+      <div class="exp-header"><div><h3>Digital Marketing Executive</h3><p class="exp-company">Mantra Properties & Developers</p></div><div style="text-align:right"><span class="exp-period">Jul 2021 — Mar 2022</span><br/><span class="exp-loc">Pune, India</span></div></div>
+      <ul><li>Executed campaigns across Google Ads, Facebook Ads & Taboola</li><li>Built audience segmentation models based on income & asset demographics</li><li>Connected digital lead-gen with bottom-of-funnel offline conversions</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="proj-section" id="projects">
+  <div class="container" style="max-width:720px">
+    <div class="reveal"><span class="sec-label">Projects</span>
+      <h2 class="sec-title" style="margin-bottom:36px">What I've <span class="hl">Built</span></h2></div>
+    <div class="proj-grid">
+      <div class="reveal proj-card" style="transition-delay:.05s">
+        <div class="proj-metric">Zero Data Loss</div>
+        <h3>GA4 Migration at Scale</h3>
+        <p>Led end-to-end migration from Universal Analytics to GA4 for multiple national ecommerce retailers, ensuring seamless tracking continuity.</p>
+        <div class="proj-tags"><span class="proj-tag">GA4</span><span class="proj-tag">GTM</span><span class="proj-tag">Data Migration</span></div>
       </div>
-
-      <div style={{position:"relative",zIndex:1}}>
-
-        {/* HERO */}
-        <section id="hero" style={{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",textAlign:"center",padding:"0 24px",position:"relative"}}>
-          <div style={{position:"absolute",width:380,height:380,border:"1px solid rgba(245,158,11,0.08)",borderTop:"1px solid rgba(245,158,11,0.3)",borderRadius:"50%",animation:"spin 22s linear infinite",transform:`translateY(${-sY*0.18}px)`}}/>
-          <div style={{position:"absolute",width:280,height:280,border:"1px solid rgba(99,102,241,0.06)",borderBottom:"1px solid rgba(99,102,241,0.25)",borderRadius:"50%",animation:"spin 16s linear infinite reverse",transform:`translateY(${-sY*0.12}px)`}}/>
-
-          <SR delay={150}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"7px 18px",borderRadius:24,background:"rgba(245,158,11,0.08)",border:"1px solid rgba(245,158,11,0.18)",fontSize:12,fontWeight:500,color:"#fbbf24",letterSpacing:1.5,textTransform:"uppercase",marginBottom:28}}>
-              <span style={{width:6,height:6,borderRadius:"50%",background:"#f59e0b",animation:"pulse 2s infinite"}}/>
-              Available for opportunities
-            </div>
-          </SR>
-
-          <SR delay={300}>
-            <h1 style={{fontSize:"clamp(34px,5.5vw,68px)",fontWeight:900,lineHeight:1.05,letterSpacing:-2,marginBottom:18}}>
-              <span style={{color:"rgba(255,255,255,0.95)"}}>Hi, I'm </span>
-              <span style={{background:"linear-gradient(135deg,#f59e0b 0%,#f97316 40%,#6366f1 100%)",backgroundSize:"200% 200%",animation:"gshift 5s ease infinite",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Nikhil</span>
-            </h1>
-          </SR>
-
-          <SR delay={450}>
-            <p style={{fontSize:17,color:"rgba(255,255,255,0.45)",maxWidth:480,lineHeight:1.75,fontWeight:300}}>
-              I architect the <span style={{color:"#f59e0b",fontWeight:600}}>Source of Truth</span> for global e-commerce brands — turning messy data into clear, profitable decisions.
-            </p>
-          </SR>
-
-          <SR delay={600}>
-            <div style={{display:"flex",gap:14,marginTop:32,flexWrap:"wrap",justifyContent:"center"}}>
-              <button onClick={()=>go("projects")} style={{padding:"13px 30px",borderRadius:50,background:G,color:"#fff",border:"none",fontSize:14,fontWeight:600,cursor:"pointer",transition:"all .3s",boxShadow:"0 4px 20px rgba(245,158,11,0.25)"}}
-                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(245,158,11,0.35)";}}
-                onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(245,158,11,0.25)";}}>
-                View Projects
-              </button>
-              <button onClick={()=>go("contact")} style={{padding:"13px 30px",borderRadius:50,background:"transparent",color:"rgba(255,255,255,0.65)",border:"1px solid rgba(255,255,255,0.12)",fontSize:14,fontWeight:500,cursor:"pointer",transition:"all .3s"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.4)";e.currentTarget.style.color="#fff";}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.12)";e.currentTarget.style.color="rgba(255,255,255,0.65)";}}>
-                Get In Touch
-              </button>
-            </div>
-          </SR>
-
-          <div style={{position:"absolute",bottom:36,display:"flex",flexDirection:"column",alignItems:"center",animation:"float 2.5s ease-in-out infinite"}}>
-            <span style={{fontSize:10,color:"rgba(255,255,255,0.25)",letterSpacing:2.5,textTransform:"uppercase",marginBottom:6}}>Scroll</span>
-            <div style={{width:1,height:28,background:"linear-gradient(to bottom,rgba(245,158,11,0.4),transparent)"}}/>
-          </div>
-        </section>
-
-        {/* ABOUT */}
-        <section id="about" style={{minHeight:"75vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"100px 24px"}}>
-          <div style={{maxWidth:680,width:"100%"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>About</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:22,letterSpacing:-1}}>Data-Led. <span style={{color:"#f59e0b"}}>Growth-Focused.</span></h2></SR>
-            <SR delay={150}><p style={{fontSize:15.5,lineHeight:1.8,color:"rgba(255,255,255,0.55)",marginBottom:18}}>I'm a Digital Marketing & Analytics Specialist at <span style={{color:"#f59e0b",fontWeight:600}}>Pattern®</span>, helping global eCommerce brands build trustworthy, actionable data systems that power smarter marketing decisions.</p></SR>
-            <SR delay={250}><p style={{fontSize:15.5,lineHeight:1.8,color:"rgba(255,255,255,0.55)",marginBottom:18}}>I specialize in campaign analytics, audience data validation, and marketing measurement — ensuring accuracy across tracking, segmentation, attribution, and reporting.</p></SR>
-            <SR delay={350}><p style={{fontSize:14,lineHeight:1.8,color:"rgba(255,255,255,0.4)",fontStyle:"italic"}}>When I'm not untangling data layers or reconciling revenue discrepancies, you'll find me on my motorcycle chasing the perfect corner.</p></SR>
-
-            <SR delay={450}>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginTop:36}}>
-                {[{n:"4+",l:"Years Experience"},{n:"3",l:"Companies"},{n:"50+",l:"Brands Served"}].map((s,i)=>(
-                  <div key={i} style={{textAlign:"center",padding:"22px 14px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,transition:"all .3s"}}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.2)";e.currentTarget.style.transform="translateY(-3px)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.05)";e.currentTarget.style.transform="translateY(0)";}}>
-                    <div style={{fontSize:30,fontWeight:800,background:G,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{s.n}</div>
-                    <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:4,textTransform:"uppercase",letterSpacing:1}}>{s.l}</div>
-                  </div>
-                ))}
-              </div>
-            </SR>
-          </div>
-        </section>
-
-        {/* EXPERIENCE */}
-        <section id="experience" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
-          <div style={{maxWidth:680,width:"100%"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Experience</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:36,letterSpacing:-1}}>Where I've Made <span style={{color:"#f59e0b"}}>Impact</span></h2></SR>
-            <ExpCard role="Digital Marketing Analyst" company="Pattern®" period="Sep 2024 — Present" location="Pune, India" delay={100} accent="#f59e0b"
-              bullets={["Architect custom tracking via GA4, Web/Server GTM, and Meta CAPI","Deep-dive audits to fix broken data layers & Shopify revenue discrepancies","Automate data pipelines using n8n, optimize queries in Supermetrics","Build scalable dashboards in Looker Studio & Tableau"]}/>
-            <ExpCard role="Web Analyst" company="Sumeru Global Technologies" period="Mar 2022 — Sep 2024" location="Bengaluru, India" delay={200} accent="#818cf8"
-              bullets={["Led end-to-end UA to GA4 migration with zero data loss","Architected Google Tags, Meta pixels & custom event tracking via GTM","Optimized high-performing Facebook Ad campaigns, maximizing ROAS"]}/>
-            <ExpCard role="Digital Marketing Executive" company="Mantra Properties" period="Jul 2021 — Mar 2022" location="Pune, India" delay={300} accent="#a78bfa"
-              bullets={["Executed campaigns across Google Ads, Facebook Ads & Taboola","Built audience segmentation models based on income & asset demographics","Connected digital lead-gen with bottom-of-funnel offline conversions"]}/>
-          </div>
-        </section>
-
-        {/* PROJECTS */}
-        <section id="projects" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
-          <div style={{maxWidth:720,width:"100%"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Projects</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:36,letterSpacing:-1}}>What I've <span style={{color:"#f59e0b"}}>Built</span></h2></SR>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:18}}>
-              {projects.map((p,i)=>(
-                <ProjectCard key={i} {...p} delay={i*100}/>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section id="testimonials" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
-          <div style={{maxWidth:680,width:"100%"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Testimonials</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:12,letterSpacing:-1}}>Kind Words from <span style={{color:"#f59e0b"}}>Colleagues</span></h2>
-              <p style={{fontSize:14,color:"rgba(255,255,255,0.4)",marginBottom:32}}>Real recommendations from LinkedIn</p></SR>
-            {testimonials.map((t,i)=>(
-              <TestimonialCard key={i} {...t} delay={i*150}/>
-            ))}
-          </div>
-        </section>
-
-        {/* SKILLS */}
-        <section id="skills" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
-          <div style={{maxWidth:680,width:"100%"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Skills</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:28,letterSpacing:-1}}>My <span style={{color:"#f59e0b"}}>Toolkit</span></h2></SR>
-            <div style={{display:"flex",flexWrap:"wrap"}}>
-              {skills.map((s,i)=>(
-                <SR key={s} delay={i*40} dir="up">
-                  <span style={{display:"inline-block",padding:"9px 18px",borderRadius:50,background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.15)",color:"#fbbf24",fontSize:13,fontWeight:500,margin:"0 8px 10px 0",transition:"all .3s",cursor:"default"}}
-                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(245,158,11,0.15)";e.currentTarget.style.transform="translateY(-3px) scale(1.04)";e.currentTarget.style.boxShadow="0 6px 18px rgba(245,158,11,0.12)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.background="rgba(245,158,11,0.06)";e.currentTarget.style.transform="translateY(0) scale(1)";e.currentTarget.style.boxShadow="none";}}>
-                    {s}
-                  </span>
-                </SR>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CONTACT */}
-        <section id="contact" style={{padding:"100px 24px 50px",display:"flex",justifyContent:"center"}}>
-          <div style={{maxWidth:680,width:"100%",textAlign:"center"}}>
-            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Contact</span>
-              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:14,letterSpacing:-1}}>Let's <span style={{color:"#f59e0b"}}>Connect</span></h2>
-              <p style={{color:"rgba(255,255,255,0.45)",fontSize:15,marginBottom:32}}>Have a project, opportunity, or just want to chat data? Reach out.</p></SR>
-            <SR delay={150}>
-              <div style={{display:"flex",justifyContent:"center",gap:14,flexWrap:"wrap"}}>
-                <a href="mailto:nikhildeshpande62@gmail.com" style={{padding:"13px 26px",borderRadius:50,background:G,color:"#fff",textDecoration:"none",fontSize:13.5,fontWeight:600,boxShadow:"0 4px 18px rgba(245,158,11,0.2)",transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
-                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";}}>
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                  Email Me
-                </a>
-                <a href="tel:+91XXXXXXXXXX" style={{padding:"13px 26px",borderRadius:50,background:"rgba(245,158,11,0.08)",color:"#fbbf24",textDecoration:"none",border:"1px solid rgba(245,158,11,0.2)",fontSize:13.5,fontWeight:600,transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.5)";e.currentTarget.style.transform="translateY(-2px)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.2)";e.currentTarget.style.transform="translateY(0)";}}>
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-                  Call Me
-                </a>
-                <a href="https://www.linkedin.com/in/nikhildeshpande1305" target="_blank" rel="noopener noreferrer" style={{padding:"13px 26px",borderRadius:50,background:"transparent",color:"rgba(255,255,255,0.6)",textDecoration:"none",border:"1px solid rgba(255,255,255,0.1)",fontSize:13.5,fontWeight:500,transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(99,102,241,0.4)";e.currentTarget.style.color="#a5b4fc";}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.1)";e.currentTarget.style.color="rgba(255,255,255,0.6)";}}>
-                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                  LinkedIn
-                </a>
-              </div>
-            </SR>
-
-            <div style={{marginTop:70,paddingTop:26,borderTop:"1px solid rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.2)",fontSize:12}}>
-              Crafted with precision & passion — Nikhil Deshpande © 2026
-            </div>
-          </div>
-        </section>
+      <div class="reveal proj-card" style="transition-delay:.15s">
+        <div class="proj-metric">Revenue Accuracy ↑</div>
+        <h3>Revenue Reconciliation Engine</h3>
+        <p>Built automated systems to identify and fix Shopify revenue discrepancies across multi-channel attribution, decoding complex customer journeys.</p>
+        <div class="proj-tags"><span class="proj-tag">Shopify</span><span class="proj-tag">Attribution</span><span class="proj-tag">Looker Studio</span></div>
+      </div>
+      <div class="reveal proj-card" style="transition-delay:.25s">
+        <div class="proj-metric">Signal Quality ↑</div>
+        <h3>Server-Side Tracking Architecture</h3>
+        <p>Architected server-side GTM with Meta CAPI integration, creating clean data pipelines that improved ad signal quality and campaign optimization.</p>
+        <div class="proj-tags"><span class="proj-tag">Server GTM</span><span class="proj-tag">Meta CAPI</span><span class="proj-tag">Data Architecture</span></div>
+      </div>
+      <div class="reveal proj-card" style="transition-delay:.35s">
+        <div class="proj-metric">50+ Brands Served</div>
+        <h3>Automated Reporting Dashboards</h3>
+        <p>Designed scalable dashboards in Looker Studio and Tableau that translate complex datasets into clear, actionable insights for global stakeholders.</p>
+        <div class="proj-tags"><span class="proj-tag">Tableau</span><span class="proj-tag">Looker Studio</span><span class="proj-tag">n8n</span></div>
       </div>
     </div>
-  );
-}
+  </div>
+</section>
 
-function ProjectCard({title,desc,tags,metric,delay}){
-  return(
-    <SR delay={delay} dir="up">
-      <div style={{background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,padding:"26px 24px",transition:"all .35s",cursor:"default",height:"100%"}}
-        onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.3)";e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow="0 14px 36px rgba(245,158,11,0.06)";}}
-        onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.06)";e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
-        {metric&&<div style={{display:"inline-block",padding:"4px 12px",borderRadius:20,background:"rgba(245,158,11,0.1)",color:"#fbbf24",fontSize:11.5,fontWeight:600,marginBottom:12}}>{metric}</div>}
-        <h3 style={{fontSize:17,fontWeight:700,color:"#fff",margin:"0 0 10px"}}>{title}</h3>
-        <p style={{fontSize:13,color:"rgba(255,255,255,0.5)",lineHeight:1.7,marginBottom:14}}>{desc}</p>
-        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{tags.map((t,i)=><span key={i} style={{padding:"3px 9px",borderRadius:20,background:"rgba(99,102,241,0.08)",color:"#a5b4fc",fontSize:10.5,fontWeight:500}}>{t}</span>)}</div>
-      </div>
-    </SR>
-  );
-}
+<!-- TESTIMONIALS -->
+<section class="test-section" id="testimonials">
+  <div class="container">
+    <div class="reveal"><span class="sec-label">Testimonials</span>
+      <h2 class="sec-title">Kind Words from <span class="hl">Colleagues</span></h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.4);margin:8px 0 32px">Real recommendations from LinkedIn</p></div>
 
-function TestimonialCard({quote,name,role,delay}){
-  return(
-    <SR delay={delay} dir="right">
-      <div style={{background:"rgba(245,158,11,0.03)",border:"1px solid rgba(245,158,11,0.1)",borderRadius:16,padding:"28px 26px",marginBottom:18,position:"relative",transition:"all .3s"}}
-        onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.25)";e.currentTarget.style.transform="translateX(4px)";}}
-        onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.1)";e.currentTarget.style.transform="translateX(0)";}}>
-        <div style={{fontSize:52,color:"rgba(245,158,11,0.15)",fontFamily:"Georgia,serif",lineHeight:1,position:"absolute",top:10,left:18}}>"</div>
-        <p style={{fontSize:14,color:"rgba(255,255,255,0.6)",lineHeight:1.8,fontStyle:"italic",marginBottom:16,paddingTop:10}}>{quote}</p>
-        <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{width:38,height:38,borderRadius:"50%",background:"linear-gradient(135deg,#f59e0b,#6366f1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,color:"#fff",flexShrink:0}}>{name[0]}</div>
-          <div><div style={{fontSize:14,fontWeight:600,color:"#fff"}}>{name}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.38)"}}>{role}</div></div>
-        </div>
-      </div>
-    </SR>
-  );
-}
+    <div class="reveal-r test-card" style="transition-delay:.1s">
+      <div class="test-quote-mark">"</div>
+      <blockquote>Nikhil is an exceptional analytics professional. His in-depth knowledge of Google Analytics and his remarkable ability to build insightful dashboards in Looker Studio make him a true expert. He simplifies complex problems and explains solutions in a way everyone can understand. He's truly a one-man army when it comes to analytics and tracking — always eager to learn, explore new tools, and automate processes using AI.</blockquote>
+      <div class="test-author"><div class="test-avatar">S</div><div><div class="test-name">Shubham Shukla</div><div class="test-role">SEO Assistant, Pattern Australia</div></div></div>
+    </div>
+
+    <div class="reveal-r test-card" style="transition-delay:.2s">
+      <div class="test-quote-mark">"</div>
+      <blockquote>Nikhil's skills in web analytics helped boost user experience and ROI on several projects at Sumeru Inc. His analytical thinking and teamwork made a real impact, especially in using data to address complex challenges. He works well with others and is a great fit for roles that require strong data analysis and problem-solving.</blockquote>
+      <div class="test-author"><div class="test-avatar">M</div><div><div class="test-name">Mikhil Khattar</div><div class="test-role">Head - Marketing Analytics, Sumeru Inc</div></div></div>
+    </div>
+
+    <div class="reveal-r test-card" style="transition-delay:.3s">
+      <div class="test-quote-mark">"</div>
+      <blockquote>Nikhil is an excellent worker and helps provide strategic advice for the optimum analytical setup. He's a strong communicator that can explain complex tracking systems in simple terms. He led a number of projects at Pattern, particularly during the intense switch to GA4 that helped set up many national ecommerce retailers for success. He would be an asset to any team.</blockquote>
+      <div class="test-author"><div class="test-avatar">K</div><div><div class="test-name">Katie McKelvie</div><div class="test-role">Search & Digital Experience Manager, Royal Canin</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="container">
+    <div class="reveal"><span class="sec-label">Skills</span>
+      <h2 class="sec-title" style="margin-bottom:28px">My <span class="hl">Toolkit</span></h2></div>
+    <div class="reveal" style="transition-delay:.15s" id="skillsWrap">
+      <span class="skill-pill">GA4</span><span class="skill-pill">Google Tag Manager</span><span class="skill-pill">Server-Side GTM</span><span class="skill-pill">Meta CAPI</span><span class="skill-pill">SQL</span><span class="skill-pill">Tableau</span><span class="skill-pill">Looker Studio</span><span class="skill-pill">Supermetrics</span><span class="skill-pill">n8n</span><span class="skill-pill">Shopify Analytics</span><span class="skill-pill">Facebook Ads</span><span class="skill-pill">Google Ads</span><span class="skill-pill">UTM Governance</span><span class="skill-pill">Attribution Modeling</span><span class="skill-pill">Data Pipelines</span><span class="skill-pill">BigQuery</span><span class="skill-pill">Audience Segmentation</span><span class="skill-pill">CRM Analytics</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="container" style="text-align:center">
+    <div class="reveal"><span class="sec-label">Contact</span>
+      <h2 class="sec-title">Let's <span class="hl">Connect</span></h2>
+      <p style="color:rgba(255,255,255,.45);font-size:15px;margin:14px 0 32px">Have a project, opportunity, or just want to chat data? Reach out.</p></div>
+    <div class="reveal contact-btns" style="transition-delay:.15s">
+      <a href="mailto:nikhildeshpande62@gmail.com" class="contact-btn email">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email Me
+      </a>
+      <a href="tel:+91XXXXXXXXXX" class="contact-btn phone">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Call Me
+      </a>
+      <a href="https://www.linkedin.com/in/nikhildeshpande1305" target="_blank" rel="noopener noreferrer" class="contact-btn linkedin">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+    <footer>Crafted with precision & passion — Nikhil Deshpande © 2026</footer>
+  </div>
+</section>
+
+<script>
+// PARTICLES
+(function(){
+  const c=document.getElementById('particles');
+  const data=[];
+  for(let i=0;i<16;i++){
+    const d=document.createElement('div');
+    d.className='particle';
+    const s=5+Math.random()*15;
+    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.12+Math.random()*.25};animation:float ${2.5+Math.random()*4}s ease-in-out infinite;animation-delay:${Math.random()*3}s`;
+    c.appendChild(d);
+    data.push({el:d,rate:.04+i*.007});
+  }
+  const orb1=document.createElement('div');orb1.className='orb1';c.appendChild(orb1);
+  const orb2=document.createElement('div');orb2.className='orb2';c.appendChild(orb2);
+  const r1=document.getElementById('ring1'),r2=document.getElementById('ring2');
+
+  window.addEventListener('scroll',()=>{
+    const y=window.scrollY;
+    data.forEach(p=>{p.el.style.transform=`translateY(${-y*p.rate}px)`;});
+    orb1.style.transform=`translateY(${-y*.12}px)`;
+    orb2.style.transform=`translateY(${-y*.08}px)`;
+    if(r1)r1.style.transform=`translateY(${-y*.18}px)`;
+    if(r2)r2.style.transform=`translateY(${-y*.12}px)`;
+  },{passive:true});
+})();
+
+// SCROLL REVEAL
+(function(){
+  const els=document.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}});
+  },{threshold:.1});
+  els.forEach(el=>obs.observe(el));
+})();
+
+// NAV SCROLL & ACTIVE STATE
+(function(){
+  const nav=document.getElementById('navbar');
+  const links=document.querySelectorAll('.nav-links a');
+  const sections=Array.from(links).map(a=>({id:a.dataset.section,el:document.getElementById(a.dataset.section)})).filter(s=>s.el);
+
+  window.addEventListener('scroll',()=>{
+    const y=window.scrollY;
+    nav.classList.toggle('scrolled',y>50);
+    let current='hero';
+    sections.forEach(s=>{if(y>=s.el.offsetTop-220)current=s.id;});
+    links.forEach(a=>{a.classList.toggle('active',a.dataset.section===current);});
+  },{passive:true});
+})();
+</script>
+</body>
+</html>
