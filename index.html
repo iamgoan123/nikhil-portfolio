@@ -1,0 +1,284 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+const SECS = ["hero","about","experience","projects","testimonials","skills","contact"];
+const NAV = {hero:"Home",about:"About",experience:"Work",projects:"Projects",testimonials:"Kind Words",skills:"Skills",contact:"Contact"};
+
+const SR = ({children,delay=0,dir="up"}) => {
+  const r=useRef(null);const[v,setV]=useState(false);
+  useEffect(()=>{const el=r.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting){setTimeout(()=>setV(true),delay);o.unobserve(el);}},{threshold:0.1});o.observe(el);return()=>o.disconnect();},[delay]);
+  const t={up:"translateY(50px)",down:"translateY(-50px)",left:"translateX(50px)",right:"translateX(-50px)"};
+  return <div ref={r} style={{opacity:v?1:0,transform:v?"translate(0,0)":t[dir],transition:"opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1)"}}>{children}</div>;
+};
+
+const G = "linear-gradient(135deg,#f59e0b,#f97316)";
+const G2 = "linear-gradient(135deg,#6366f1,#818cf8)";
+
+export default function App(){
+  const[sY,setSY]=useState(0);
+  const[act,setAct]=useState("hero");
+  const[mobNav,setMobNav]=useState(false);
+  const cRef=useRef(null);
+
+  const onScroll=useCallback(()=>{
+    const el=cRef.current;if(!el)return;setSY(el.scrollTop);
+    const ss=SECS.map(id=>{const s=document.getElementById(id);return s?{id,top:s.offsetTop-220}:null}).filter(Boolean);
+    for(let i=ss.length-1;i>=0;i--){if(el.scrollTop>=ss[i].top){setAct(ss[i].id);break;}}
+  },[]);
+
+  useEffect(()=>{const el=cRef.current;if(el)el.addEventListener("scroll",onScroll,{passive:true});return()=>el?.removeEventListener("scroll",onScroll);},[onScroll]);
+
+  const go=(id)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth"});setMobNav(false);};
+
+  const skills=["GA4","Google Tag Manager","Server-Side GTM","Meta CAPI","SQL","Tableau","Looker Studio","Supermetrics","n8n","Shopify Analytics","Facebook Ads","Google Ads","UTM Governance","Attribution Modeling","Data Pipelines","BigQuery","Audience Segmentation","CRM Analytics"];
+
+  const projects=[
+    {title:"GA4 Migration at Scale",desc:"Led the end-to-end migration from Universal Analytics to GA4 for multiple national ecommerce retailers, ensuring zero data loss and seamless tracking continuity across all digital properties.",tags:["GA4","GTM","Data Migration"],metric:"Zero Data Loss"},
+    {title:"Revenue Reconciliation Engine",desc:"Built automated systems to identify and fix Shopify revenue discrepancies across multi-channel attribution, decoding complex customer journeys for accurate reporting.",tags:["Shopify","Attribution","Looker Studio"],metric:"Revenue Accuracy ↑"},
+    {title:"Server-Side Tracking Architecture",desc:"Architected and deployed server-side GTM with Meta CAPI integration, creating clean data pipelines that improved ad signal quality and campaign optimization.",tags:["Server GTM","Meta CAPI","Data Architecture"],metric:"Signal Quality ↑"},
+    {title:"Automated Reporting Dashboards",desc:"Designed scalable, automated dashboards in Looker Studio and Tableau that translate complex datasets into clear, actionable insights for global brand stakeholders.",tags:["Tableau","Looker Studio","Supermetrics","n8n"],metric:"50+ Brands Served"},
+  ];
+
+  const testimonials=[
+    {name:"Shubham Shukla",role:"SEO Assistant, Pattern Australia",quote:"Nikhil is an exceptional analytics professional. His in-depth knowledge of Google Analytics and his remarkable ability to build insightful dashboards in Looker Studio make him a true expert. He simplifies complex problems and explains solutions in a way everyone can understand. He's truly a one-man army when it comes to analytics and tracking — always eager to learn, explore new tools, and automate processes using AI."},
+    {name:"Mikhil Khattar",role:"Head - Marketing Analytics, Sumeru Inc",quote:"Nikhil's skills in web analytics helped boost user experience and ROI on several projects at Sumeru Inc. His analytical thinking and teamwork made a real impact, especially in using data to address complex challenges. He works well with others and is a great fit for roles that require strong data analysis and problem-solving."},
+    {name:"Katie McKelvie",role:"Search & Digital Experience Manager, Royal Canin",quote:"Nikhil is an excellent worker and helps provide strategic advice for the optimum analytical setup. He's a strong communicator that can explain complex tracking systems in simple terms. He led a number of projects at Pattern, particularly during the intense switch to GA4 that helped set up many national ecommerce retailers for success. He would be an asset to any team."},
+  ];
+
+  const particles=Array.from({length:14},(_,i)=>({w:5+Math.random()*14,l:`${Math.random()*100}%`,t:`${Math.random()*100}%`,o:0.12+Math.random()*0.25,sp:2.5+Math.random()*4,d:Math.random()*3}));
+
+  return(
+    <div ref={cRef} style={{height:"100vh",overflowY:"auto",overflowX:"hidden",background:"#08080d",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",color:"#fff",position:"relative"}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        ::selection{background:rgba(245,158,11,0.3);color:#fff}
+        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(245,158,11,0.25);border-radius:3px}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+        @keyframes pulse{0%,100%{opacity:.25}50%{opacity:.6}}
+        @keyframes gshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .navlink{position:relative;padding-bottom:4px}
+        .navlink::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:#f59e0b;transition:all .3s;transform:translateX(-50%)}
+        .navlink:hover::after,.navlink.active::after{width:100%}
+      `}</style>
+
+      {/* NAV */}
+      <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"14px 36px",display:"flex",justifyContent:"space-between",alignItems:"center",background:sY>50?"rgba(8,8,13,0.9)":"transparent",backdropFilter:sY>50?"blur(20px)":"none",borderBottom:sY>50?"1px solid rgba(255,255,255,0.05)":"none",transition:"all .4s"}}>
+        <div onClick={()=>go("hero")} style={{fontSize:22,fontWeight:900,cursor:"pointer",letterSpacing:-1}}>
+          <span style={{color:"#f59e0b"}}>N</span><span style={{color:"#fff"}}>D</span><span style={{color:"#6366f1"}}>.</span>
+        </div>
+        <div style={{display:"flex",gap:24}}>
+          {SECS.map(s=>(
+            <span key={s} className={`navlink ${act===s?"active":""}`} onClick={()=>go(s)} style={{fontSize:12,fontWeight:act===s?600:400,color:act===s?"#f59e0b":"rgba(255,255,255,0.5)",cursor:"pointer",textTransform:"uppercase",letterSpacing:1.5,transition:"color .3s"}}>{NAV[s]}</span>
+          ))}
+        </div>
+      </nav>
+
+      {/* PARTICLES */}
+      <div style={{position:"fixed",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
+        {particles.map((p,i)=><div key={i} style={{position:"absolute",width:p.w,height:p.w,borderRadius:"50%",background:"radial-gradient(circle,rgba(245,158,11,0.5) 0%,transparent 70%)",left:p.l,top:p.t,opacity:p.o,transform:`translateY(${-sY*(0.04+i*0.007)}px)`,animation:`float ${p.sp}s ease-in-out infinite`,animationDelay:`${p.d}s`}}/>)}
+        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(245,158,11,0.06) 0%,transparent 70%)",top:-120,right:-120,transform:`translateY(${-sY*0.12}px)`,animation:"pulse 7s ease-in-out infinite"}}/>
+        <div style={{position:"absolute",width:400,height:400,borderRadius:"50%",background:"radial-gradient(circle,rgba(99,102,241,0.05) 0%,transparent 70%)",bottom:100,left:-100,transform:`translateY(${-sY*0.08}px)`,animation:"pulse 9s ease-in-out infinite"}}/>
+      </div>
+
+      <div style={{position:"relative",zIndex:1}}>
+
+        {/* HERO */}
+        <section id="hero" style={{minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",textAlign:"center",padding:"0 24px",position:"relative"}}>
+          <div style={{position:"absolute",width:380,height:380,border:"1px solid rgba(245,158,11,0.08)",borderTop:"1px solid rgba(245,158,11,0.3)",borderRadius:"50%",animation:"spin 22s linear infinite",transform:`translateY(${-sY*0.18}px)`}}/>
+          <div style={{position:"absolute",width:280,height:280,border:"1px solid rgba(99,102,241,0.06)",borderBottom:"1px solid rgba(99,102,241,0.25)",borderRadius:"50%",animation:"spin 16s linear infinite reverse",transform:`translateY(${-sY*0.12}px)`}}/>
+
+          <SR delay={150}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"7px 18px",borderRadius:24,background:"rgba(245,158,11,0.08)",border:"1px solid rgba(245,158,11,0.18)",fontSize:12,fontWeight:500,color:"#fbbf24",letterSpacing:1.5,textTransform:"uppercase",marginBottom:28}}>
+              <span style={{width:6,height:6,borderRadius:"50%",background:"#f59e0b",animation:"pulse 2s infinite"}}/>
+              Available for opportunities
+            </div>
+          </SR>
+
+          <SR delay={300}>
+            <h1 style={{fontSize:"clamp(34px,5.5vw,68px)",fontWeight:900,lineHeight:1.05,letterSpacing:-2,marginBottom:18}}>
+              <span style={{color:"rgba(255,255,255,0.95)"}}>Hi, I'm </span>
+              <span style={{background:"linear-gradient(135deg,#f59e0b 0%,#f97316 40%,#6366f1 100%)",backgroundSize:"200% 200%",animation:"gshift 5s ease infinite",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Nikhil</span>
+            </h1>
+          </SR>
+
+          <SR delay={450}>
+            <p style={{fontSize:17,color:"rgba(255,255,255,0.45)",maxWidth:480,lineHeight:1.75,fontWeight:300}}>
+              I architect the <span style={{color:"#f59e0b",fontWeight:600}}>Source of Truth</span> for global e-commerce brands — turning messy data into clear, profitable decisions.
+            </p>
+          </SR>
+
+          <SR delay={600}>
+            <div style={{display:"flex",gap:14,marginTop:32,flexWrap:"wrap",justifyContent:"center"}}>
+              <button onClick={()=>go("projects")} style={{padding:"13px 30px",borderRadius:50,background:G,color:"#fff",border:"none",fontSize:14,fontWeight:600,cursor:"pointer",transition:"all .3s",boxShadow:"0 4px 20px rgba(245,158,11,0.25)"}}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(245,158,11,0.35)";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(245,158,11,0.25)";}}>
+                View Projects
+              </button>
+              <button onClick={()=>go("contact")} style={{padding:"13px 30px",borderRadius:50,background:"transparent",color:"rgba(255,255,255,0.65)",border:"1px solid rgba(255,255,255,0.12)",fontSize:14,fontWeight:500,cursor:"pointer",transition:"all .3s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.4)";e.currentTarget.style.color="#fff";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.12)";e.currentTarget.style.color="rgba(255,255,255,0.65)";}}>
+                Get In Touch
+              </button>
+            </div>
+          </SR>
+
+          <div style={{position:"absolute",bottom:36,display:"flex",flexDirection:"column",alignItems:"center",animation:"float 2.5s ease-in-out infinite"}}>
+            <span style={{fontSize:10,color:"rgba(255,255,255,0.25)",letterSpacing:2.5,textTransform:"uppercase",marginBottom:6}}>Scroll</span>
+            <div style={{width:1,height:28,background:"linear-gradient(to bottom,rgba(245,158,11,0.4),transparent)"}}/>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section id="about" style={{minHeight:"75vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"100px 24px"}}>
+          <div style={{maxWidth:680,width:"100%"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>About</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:22,letterSpacing:-1}}>Data-Led. <span style={{color:"#f59e0b"}}>Growth-Focused.</span></h2></SR>
+            <SR delay={150}><p style={{fontSize:15.5,lineHeight:1.8,color:"rgba(255,255,255,0.55)",marginBottom:18}}>I'm a Digital Marketing & Analytics Specialist at <span style={{color:"#f59e0b",fontWeight:600}}>Pattern®</span>, helping global eCommerce brands build trustworthy, actionable data systems that power smarter marketing decisions.</p></SR>
+            <SR delay={250}><p style={{fontSize:15.5,lineHeight:1.8,color:"rgba(255,255,255,0.55)",marginBottom:18}}>I specialize in campaign analytics, audience data validation, and marketing measurement — ensuring accuracy across tracking, segmentation, attribution, and reporting.</p></SR>
+            <SR delay={350}><p style={{fontSize:14,lineHeight:1.8,color:"rgba(255,255,255,0.4)",fontStyle:"italic"}}>When I'm not untangling data layers or reconciling revenue discrepancies, you'll find me on my motorcycle chasing the perfect corner.</p></SR>
+
+            <SR delay={450}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginTop:36}}>
+                {[{n:"4+",l:"Years Experience"},{n:"3",l:"Companies"},{n:"50+",l:"Brands Served"}].map((s,i)=>(
+                  <div key={i} style={{textAlign:"center",padding:"22px 14px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:12,transition:"all .3s"}}
+                    onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.2)";e.currentTarget.style.transform="translateY(-3px)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.05)";e.currentTarget.style.transform="translateY(0)";}}>
+                    <div style={{fontSize:30,fontWeight:800,background:G,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>{s.n}</div>
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",marginTop:4,textTransform:"uppercase",letterSpacing:1}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </SR>
+          </div>
+        </section>
+
+        {/* EXPERIENCE */}
+        <section id="experience" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:680,width:"100%"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Experience</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:36,letterSpacing:-1}}>Where I've Made <span style={{color:"#f59e0b"}}>Impact</span></h2></SR>
+            <ExpCard role="Digital Marketing Analyst" company="Pattern®" period="Sep 2024 — Present" location="Pune, India" delay={100} accent="#f59e0b"
+              bullets={["Architect custom tracking via GA4, Web/Server GTM, and Meta CAPI","Deep-dive audits to fix broken data layers & Shopify revenue discrepancies","Automate data pipelines using n8n, optimize queries in Supermetrics","Build scalable dashboards in Looker Studio & Tableau"]}/>
+            <ExpCard role="Web Analyst" company="Sumeru Global Technologies" period="Mar 2022 — Sep 2024" location="Bengaluru, India" delay={200} accent="#818cf8"
+              bullets={["Led end-to-end UA to GA4 migration with zero data loss","Architected Google Tags, Meta pixels & custom event tracking via GTM","Optimized high-performing Facebook Ad campaigns, maximizing ROAS"]}/>
+            <ExpCard role="Digital Marketing Executive" company="Mantra Properties" period="Jul 2021 — Mar 2022" location="Pune, India" delay={300} accent="#a78bfa"
+              bullets={["Executed campaigns across Google Ads, Facebook Ads & Taboola","Built audience segmentation models based on income & asset demographics","Connected digital lead-gen with bottom-of-funnel offline conversions"]}/>
+          </div>
+        </section>
+
+        {/* PROJECTS */}
+        <section id="projects" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:720,width:"100%"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Projects</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:36,letterSpacing:-1}}>What I've <span style={{color:"#f59e0b"}}>Built</span></h2></SR>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:18}}>
+              {projects.map((p,i)=>(
+                <ProjectCard key={i} {...p} delay={i*100}/>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* TESTIMONIALS */}
+        <section id="testimonials" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:680,width:"100%"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Testimonials</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:12,letterSpacing:-1}}>Kind Words from <span style={{color:"#f59e0b"}}>Colleagues</span></h2>
+              <p style={{fontSize:14,color:"rgba(255,255,255,0.4)",marginBottom:32}}>Real recommendations from LinkedIn</p></SR>
+            {testimonials.map((t,i)=>(
+              <TestimonialCard key={i} {...t} delay={i*150}/>
+            ))}
+          </div>
+        </section>
+
+        {/* SKILLS */}
+        <section id="skills" style={{padding:"100px 24px",display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:680,width:"100%"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Skills</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:28,letterSpacing:-1}}>My <span style={{color:"#f59e0b"}}>Toolkit</span></h2></SR>
+            <div style={{display:"flex",flexWrap:"wrap"}}>
+              {skills.map((s,i)=>(
+                <SR key={s} delay={i*40} dir="up">
+                  <span style={{display:"inline-block",padding:"9px 18px",borderRadius:50,background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.15)",color:"#fbbf24",fontSize:13,fontWeight:500,margin:"0 8px 10px 0",transition:"all .3s",cursor:"default"}}
+                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(245,158,11,0.15)";e.currentTarget.style.transform="translateY(-3px) scale(1.04)";e.currentTarget.style.boxShadow="0 6px 18px rgba(245,158,11,0.12)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="rgba(245,158,11,0.06)";e.currentTarget.style.transform="translateY(0) scale(1)";e.currentTarget.style.boxShadow="none";}}>
+                    {s}
+                  </span>
+                </SR>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CONTACT */}
+        <section id="contact" style={{padding:"100px 24px 50px",display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:680,width:"100%",textAlign:"center"}}>
+            <SR><span style={{fontSize:11,color:"#f59e0b",letterSpacing:3,textTransform:"uppercase",fontWeight:600}}>Contact</span>
+              <h2 style={{fontSize:34,fontWeight:800,marginTop:8,marginBottom:14,letterSpacing:-1}}>Let's <span style={{color:"#f59e0b"}}>Connect</span></h2>
+              <p style={{color:"rgba(255,255,255,0.45)",fontSize:15,marginBottom:32}}>Have a project, opportunity, or just want to chat data? Reach out.</p></SR>
+            <SR delay={150}>
+              <div style={{display:"flex",justifyContent:"center",gap:14,flexWrap:"wrap"}}>
+                <a href="mailto:nikhildeshpande62@gmail.com" style={{padding:"13px 26px",borderRadius:50,background:G,color:"#fff",textDecoration:"none",fontSize:13.5,fontWeight:600,boxShadow:"0 4px 18px rgba(245,158,11,0.2)",transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";}}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Me
+                </a>
+                <a href="tel:+91XXXXXXXXXX" style={{padding:"13px 26px",borderRadius:50,background:"rgba(245,158,11,0.08)",color:"#fbbf24",textDecoration:"none",border:"1px solid rgba(245,158,11,0.2)",fontSize:13.5,fontWeight:600,transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.5)";e.currentTarget.style.transform="translateY(-2px)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.2)";e.currentTarget.style.transform="translateY(0)";}}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                  Call Me
+                </a>
+                <a href="https://www.linkedin.com/in/nikhildeshpande1305" target="_blank" rel="noopener noreferrer" style={{padding:"13px 26px",borderRadius:50,background:"transparent",color:"rgba(255,255,255,0.6)",textDecoration:"none",border:"1px solid rgba(255,255,255,0.1)",fontSize:13.5,fontWeight:500,transition:"all .3s",display:"inline-flex",alignItems:"center",gap:8}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(99,102,241,0.4)";e.currentTarget.style.color="#a5b4fc";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.1)";e.currentTarget.style.color="rgba(255,255,255,0.6)";}}>
+                  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </SR>
+
+            <div style={{marginTop:70,paddingTop:26,borderTop:"1px solid rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.2)",fontSize:12}}>
+              Crafted with precision & passion — Nikhil Deshpande © 2026
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({title,desc,tags,metric,delay}){
+  return(
+    <SR delay={delay} dir="up">
+      <div style={{background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:16,padding:"26px 24px",transition:"all .35s",cursor:"default",height:"100%"}}
+        onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.3)";e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow="0 14px 36px rgba(245,158,11,0.06)";}}
+        onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.06)";e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+        {metric&&<div style={{display:"inline-block",padding:"4px 12px",borderRadius:20,background:"rgba(245,158,11,0.1)",color:"#fbbf24",fontSize:11.5,fontWeight:600,marginBottom:12}}>{metric}</div>}
+        <h3 style={{fontSize:17,fontWeight:700,color:"#fff",margin:"0 0 10px"}}>{title}</h3>
+        <p style={{fontSize:13,color:"rgba(255,255,255,0.5)",lineHeight:1.7,marginBottom:14}}>{desc}</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:5}}>{tags.map((t,i)=><span key={i} style={{padding:"3px 9px",borderRadius:20,background:"rgba(99,102,241,0.08)",color:"#a5b4fc",fontSize:10.5,fontWeight:500}}>{t}</span>)}</div>
+      </div>
+    </SR>
+  );
+}
+
+function TestimonialCard({quote,name,role,delay}){
+  return(
+    <SR delay={delay} dir="right">
+      <div style={{background:"rgba(245,158,11,0.03)",border:"1px solid rgba(245,158,11,0.1)",borderRadius:16,padding:"28px 26px",marginBottom:18,position:"relative",transition:"all .3s"}}
+        onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.25)";e.currentTarget.style.transform="translateX(4px)";}}
+        onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(245,158,11,0.1)";e.currentTarget.style.transform="translateX(0)";}}>
+        <div style={{fontSize:52,color:"rgba(245,158,11,0.15)",fontFamily:"Georgia,serif",lineHeight:1,position:"absolute",top:10,left:18}}>"</div>
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.6)",lineHeight:1.8,fontStyle:"italic",marginBottom:16,paddingTop:10}}>{quote}</p>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          <div style={{width:38,height:38,borderRadius:"50%",background:"linear-gradient(135deg,#f59e0b,#6366f1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,color:"#fff",flexShrink:0}}>{name[0]}</div>
+          <div><div style={{fontSize:14,fontWeight:600,color:"#fff"}}>{name}</div><div style={{fontSize:12,color:"rgba(255,255,255,0.38)"}}>{role}</div></div>
+        </div>
+      </div>
+    </SR>
+  );
+}
