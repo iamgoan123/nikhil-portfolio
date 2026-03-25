@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Nikhil Deshpande — Digital Analytics Specialist</title>
+<title>Nikhil Deshpande | Digital Analytics Specialist</title>
 <meta name="description" content="Architecting the Source of Truth for Global Brands | GA4 | GTM | Data Strategy"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 ::selection{background:rgba(99,102,241,.4);color:#fff}
@@ -20,6 +20,10 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 @keyframes gshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes statusPulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes driftUp{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100px) rotate(360deg);opacity:0}}
+@keyframes driftUpSlow{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.6}90%{opacity:.6}100%{transform:translateY(-100px) rotate(180deg);opacity:0}}
+@keyframes slideRight{0%{transform:translateX(-200px);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateX(calc(100vw + 200px));opacity:0}}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:.8}}
 
 .reveal{opacity:0;transform:translateY(42px);transition:opacity .78s cubic-bezier(.16,1,.3,1),transform .78s cubic-bezier(.16,1,.3,1)}
 .reveal.vis{opacity:1;transform:translate(0,0)}
@@ -28,10 +32,18 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .reveal-r{opacity:0;transform:translateX(-42px);transition:opacity .78s cubic-bezier(.16,1,.3,1),transform .78s cubic-bezier(.16,1,.3,1)}
 .reveal-r.vis{opacity:1;transform:translate(0,0)}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:15px 36px;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
-nav.scrolled{background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-links{display:flex;gap:26px}
-.nav-links a{font-size:12px;font-weight:400;color:rgba(255,255,255,.5);text-decoration:none;text-transform:uppercase;letter-spacing:1.5px;transition:color .3s;position:relative;padding-bottom:4px}
+/* SIDE TECH ANIMATIONS */
+.side-anim{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.tech-float{position:absolute;font-family:'Fira Code',monospace;color:rgba(99,102,241,.08);font-size:13px;white-space:nowrap;animation:driftUpSlow linear infinite}
+.data-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.08),transparent);animation:slideRight linear infinite}
+.hex-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(99,102,241,.12);animation:driftUp linear infinite}
+.bracket{position:absolute;font-family:'Fira Code',monospace;font-size:22px;color:rgba(99,102,241,.06);animation:driftUpSlow linear infinite}
+.grid-cross{position:absolute;color:rgba(99,102,241,.06);font-size:16px;animation:driftUp linear infinite}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 36px;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+nav.scrolled{background:rgba(10,10,15,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:11.5px;font-weight:400;color:rgba(255,255,255,.5);text-decoration:none;text-transform:uppercase;letter-spacing:1.5px;transition:color .3s;position:relative;padding-bottom:4px}
 .nav-links a::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:#818cf8;transition:all .3s;transform:translateX(-50%)}
 .nav-links a:hover::after,.nav-links a.active::after{width:100%}
 .nav-links a.active{color:#818cf8;font-weight:600}
@@ -42,90 +54,89 @@ nav.scrolled{background:rgba(10,10,15,.88);backdrop-filter:blur(20px);border-bot
 
 .particles{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .particle{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.45) 0%,transparent 70%)}
-.orb1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.08) 0%,transparent 70%);top:-120px;right:-120px;animation:pulse 7s ease-in-out infinite}
-.orb2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.06) 0%,transparent 70%);bottom:100px;left:-100px;animation:pulse 9s ease-in-out infinite}
+.orb1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.07) 0%,transparent 70%);top:-120px;right:-120px;animation:pulse 7s ease-in-out infinite}
+.orb2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.05) 0%,transparent 70%);bottom:100px;left:-100px;animation:pulse 9s ease-in-out infinite}
 
 section{position:relative;z-index:1}
-.container{max-width:700px;margin:0 auto;width:100%;padding:0 24px}
+.container{max-width:860px;margin:0 auto;width:100%;padding:0 32px}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 24px;position:relative}
-.ring1{position:absolute;width:400px;height:400px;border:1px solid rgba(99,102,241,.08);border-top:1px solid rgba(99,102,241,.35);border-radius:50%;animation:spin 22s linear infinite}
-.ring2{position:absolute;width:290px;height:290px;border:1px solid rgba(139,92,246,.06);border-bottom:1px solid rgba(139,92,246,.28);border-radius:50%;animation:spin 16s linear infinite reverse}
-.status-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:24px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);font-size:12px;font-weight:500;color:#a5b4fc;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px}
+.ring1{position:absolute;width:380px;height:380px;border:1px solid rgba(99,102,241,.08);border-top:1px solid rgba(99,102,241,.3);border-radius:50%;animation:spin 22s linear infinite}
+.ring2{position:absolute;width:270px;height:270px;border:1px solid rgba(139,92,246,.06);border-bottom:1px solid rgba(139,92,246,.25);border-radius:50%;animation:spin 16s linear infinite reverse}
+.status-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:24px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);font-size:12px;font-weight:500;color:#a5b4fc;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:26px}
 .status-dot{width:6px;height:6px;border-radius:50%;background:#818cf8;animation:statusPulse 2s infinite}
-.hero h1{font-size:clamp(36px,5.8vw,70px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:20px}
+.hero h1{font-size:clamp(36px,5.8vw,68px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:18px}
 .hero h1 .gradient{background:linear-gradient(135deg,#fff 0%,#a5b4fc 50%,#6366f1 100%);background-size:200% 200%;animation:gshift 5s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{font-size:17px;color:rgba(255,255,255,.45);max-width:470px;line-height:1.75;font-weight:300}
 .hero p .hl{color:#818cf8;font-weight:600}
-.btn-row{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+.btn-row{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;justify-content:center}
 .btn-primary{padding:13px 30px;border-radius:50px;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(99,102,241,.3);text-decoration:none;display:inline-block}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,.4)}
 .btn-secondary{padding:13px 30px;border-radius:50px;background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:500;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-block}
 .btn-secondary:hover{border-color:rgba(99,102,241,.4);color:#fff}
-.scroll-hint{position:absolute;bottom:36px;display:flex;flex-direction:column;align-items:center;animation:float 2.5s ease-in-out infinite}
+.scroll-hint{position:absolute;bottom:32px;display:flex;flex-direction:column;align-items:center;animation:float 2.5s ease-in-out infinite}
 .scroll-hint span{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px}
-.scroll-hint div{width:1px;height:28px;background:linear-gradient(to bottom,rgba(99,102,241,.45),transparent)}
+.scroll-hint div{width:1px;height:26px;background:linear-gradient(to bottom,rgba(99,102,241,.45),transparent)}
 
-/* SECTION HEADERS */
 .sec-label{font-size:11px;color:#818cf8;letter-spacing:3px;text-transform:uppercase;font-weight:600}
-.sec-title{font-size:34px;font-weight:800;margin-top:8px;letter-spacing:-1px}
+.sec-title{font-size:32px;font-weight:800;margin-top:6px;letter-spacing:-1px}
 .sec-title .hl{color:#818cf8}
 
 /* ABOUT */
-.about-section{min-height:75vh;display:flex;align-items:center;justify-content:center;padding:100px 24px}
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px}
-.stat-card{text-align:center;padding:22px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:12px;transition:all .3s}
+.about-section{padding:70px 24px 60px;display:flex;align-items:center;justify-content:center}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.stat-card{text-align:center;padding:20px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:12px;transition:all .3s}
 .stat-card:hover{border-color:rgba(99,102,241,.2);transform:translateY(-3px)}
-.stat-num{font-size:30px;font-weight:800;background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#818cf8,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .stat-label{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
 
 /* EXPERIENCE */
-.exp-section{padding:100px 24px;display:flex;justify-content:center}
-.exp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px 14px 14px 4px;padding:26px 28px;margin-bottom:22px;backdrop-filter:blur(10px);transition:all .3s;cursor:default}
+.exp-section{padding:60px 24px;display:flex;justify-content:center}
+.exp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px 14px 14px 4px;padding:24px 26px;margin-bottom:18px;backdrop-filter:blur(10px);transition:all .3s;cursor:default}
 .exp-card:hover{transform:translateX(6px)}
-.exp-card.accent-1{border-left:3px solid #818cf8}.exp-card.accent-1:hover{border-left-color:#a5b4fc;box-shadow:0 8px 30px rgba(99,102,241,.08)}
-.exp-card.accent-2{border-left:3px solid #6366f1}.exp-card.accent-2:hover{border-left-color:#818cf8;box-shadow:0 8px 30px rgba(99,102,241,.06)}
-.exp-card.accent-3{border-left:3px solid #a78bfa}.exp-card.accent-3:hover{border-left-color:#c4b5fd;box-shadow:0 8px 30px rgba(167,139,250,.06)}
+.exp-card.a1{border-left:3px solid #818cf8}.exp-card.a1:hover{border-left-color:#a5b4fc;box-shadow:0 8px 28px rgba(99,102,241,.08)}
+.exp-card.a2{border-left:3px solid #6366f1}.exp-card.a2:hover{border-left-color:#818cf8;box-shadow:0 8px 28px rgba(99,102,241,.06)}
+.exp-card.a3{border-left:3px solid #a78bfa}.exp-card.a3:hover{border-left-color:#c4b5fd;box-shadow:0 8px 28px rgba(167,139,250,.06)}
 .exp-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.exp-card h3{margin:0;font-size:19px;font-weight:700;color:#fff}
-.exp-company{margin:3px 0 0;font-size:14px;color:#818cf8;font-weight:600}
+.exp-card h3{margin:0;font-size:18px;font-weight:700;color:#fff}
+.exp-company{margin:3px 0 0;font-size:13.5px;color:#818cf8;font-weight:600}
 .exp-period{font-size:12px;color:rgba(255,255,255,.45);font-family:monospace}
 .exp-loc{font-size:11px;color:rgba(255,255,255,.3)}
-.exp-card ul{margin:14px 0 0;padding-left:16px;color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.75}
-.exp-card li{margin-bottom:3px}
+.exp-card ul{margin:12px 0 0;padding-left:16px;color:rgba(255,255,255,.6);font-size:13px;line-height:1.75}
+.exp-card li{margin-bottom:2px}
 
 /* PROJECTS */
-.proj-section{padding:100px 24px;display:flex;justify-content:center}
-.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
-.proj-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:26px 24px;transition:all .35s;cursor:default}
+.proj-section{padding:60px 24px;display:flex;justify-content:center}
+.proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.proj-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px 22px;transition:all .35s;cursor:default}
 .proj-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-5px);box-shadow:0 14px 36px rgba(99,102,241,.07)}
-.proj-metric{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(99,102,241,.1);color:#a5b4fc;font-size:11.5px;font-weight:600;margin-bottom:12px}
-.proj-card h3{font-size:17px;font-weight:700;color:#fff;margin:0 0 10px}
-.proj-card p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px}
+.proj-metric{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(99,102,241,.1);color:#a5b4fc;font-size:11px;font-weight:600;margin-bottom:10px}
+.proj-card h3{font-size:16px;font-weight:700;color:#fff;margin:0 0 8px}
+.proj-card p{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:12px}
 .proj-tags{display:flex;flex-wrap:wrap;gap:5px}
-.proj-tag{padding:3px 9px;border-radius:20px;background:rgba(99,102,241,.08);color:#a5b4fc;font-size:10.5px;font-weight:500}
+.proj-tag{padding:3px 9px;border-radius:20px;background:rgba(99,102,241,.08);color:#a5b4fc;font-size:10px;font-weight:500}
 
 /* TESTIMONIALS */
-.test-section{padding:100px 24px;display:flex;justify-content:center}
-.test-card{background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:16px;padding:28px 26px;margin-bottom:18px;position:relative;transition:all .3s}
+.test-section{padding:60px 24px;display:flex;justify-content:center}
+.test-card{background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:16px;padding:26px 24px;margin-bottom:16px;position:relative;transition:all .3s}
 .test-card:hover{border-color:rgba(99,102,241,.25);transform:translateX(4px)}
-.test-quote-mark{font-size:52px;color:rgba(99,102,241,.15);font-family:Georgia,serif;line-height:1;position:absolute;top:10px;left:18px}
-.test-card blockquote{font-size:14px;color:rgba(255,255,255,.6);line-height:1.8;font-style:italic;margin-bottom:16px;padding-top:10px}
+.test-qm{font-size:48px;color:rgba(99,102,241,.15);font-family:Georgia,serif;line-height:1;position:absolute;top:8px;left:18px}
+.test-card blockquote{font-size:13.5px;color:rgba(255,255,255,.6);line-height:1.8;font-style:italic;margin-bottom:14px;padding-top:8px}
 .test-author{display:flex;align-items:center;gap:12px}
-.test-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
-.test-name{font-size:14px;font-weight:600;color:#fff}
-.test-role{font-size:12px;color:rgba(255,255,255,.38)}
+.test-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#818cf8);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.test-name{font-size:13.5px;font-weight:600;color:#fff}
+.test-role{font-size:11.5px;color:rgba(255,255,255,.38)}
 
 /* SKILLS */
-.skills-section{padding:100px 24px;display:flex;justify-content:center}
-.skill-pill{display:inline-block;padding:9px 18px;border-radius:50px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.18);color:#a5b4fc;font-size:13px;font-weight:500;margin:0 8px 10px 0;transition:all .3s;cursor:default}
+.skills-section{padding:60px 24px;display:flex;justify-content:center}
+.skill-pill{display:inline-block;padding:8px 16px;border-radius:50px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.18);color:#a5b4fc;font-size:12.5px;font-weight:500;margin:0 7px 9px 0;transition:all .3s;cursor:default}
 .skill-pill:hover{background:rgba(99,102,241,.18);transform:translateY(-3px) scale(1.04);box-shadow:0 6px 18px rgba(99,102,241,.12)}
 
 /* CONTACT */
-.contact-section{padding:100px 24px 50px;display:flex;justify-content:center}
-.contact-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
-.contact-btn{padding:13px 26px;border-radius:50px;font-size:13.5px;font-weight:600;text-decoration:none;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+.contact-section{padding:60px 24px 40px;display:flex;justify-content:center}
+.contact-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.contact-btn{padding:12px 24px;border-radius:50px;font-size:13px;font-weight:600;text-decoration:none;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
 .contact-btn.email{background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;box-shadow:0 4px 18px rgba(99,102,241,.25)}
 .contact-btn.phone{background:rgba(99,102,241,.08);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
 .contact-btn.phone:hover{border-color:rgba(99,102,241,.5);transform:translateY(-2px)}
@@ -133,22 +144,26 @@ section{position:relative;z-index:1}
 .contact-btn.linkedin:hover{border-color:rgba(99,102,241,.4);color:#a5b4fc}
 .contact-btn:hover{transform:translateY(-2px)}
 
-footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05);text-align:center;color:rgba(255,255,255,.2);font-size:12px}
+footer{margin-top:50px;padding:24px 0;border-top:1px solid rgba(255,255,255,.05);text-align:center;color:rgba(255,255,255,.2);font-size:12px}
 
-/* MOBILE */
 @media(max-width:768px){
   .nav-links{display:none}
-  .hero h1{font-size:36px}
+  .hero h1{font-size:34px}
   .stats-grid{grid-template-columns:1fr}
   .proj-grid{grid-template-columns:1fr}
   .exp-header{flex-direction:column}
   .contact-btns{flex-direction:column;align-items:center}
-  nav{padding:15px 20px}
-  .sec-title{font-size:28px}
+  nav{padding:14px 18px}
+  .sec-title{font-size:26px}
+  .container{padding:0 18px}
+  .side-anim{display:none}
 }
 </style>
 </head>
 <body>
+
+<!-- SIDE TECH ANIMATIONS -->
+<div class="side-anim" id="sideAnim"></div>
 
 <!-- NAV -->
 <nav id="navbar">
@@ -178,16 +193,13 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
     <h1>Hi, I'm <span class="gradient">Nikhil</span></h1>
   </div>
   <div class="reveal" style="transition-delay:.5s">
-    <p>I architect the <span class="hl">Source of Truth</span> for global e-commerce brands — turning messy data into clear, profitable decisions.</p>
+    <p>I architect the <span class="hl">Source of Truth</span> for global e-commerce brands, turning messy data into clear, profitable decisions.</p>
   </div>
   <div class="reveal btn-row" style="transition-delay:.65s">
     <a href="#projects" class="btn-primary">View Projects</a>
     <a href="#contact" class="btn-secondary">Get In Touch</a>
   </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div></div>
-  </div>
+  <div class="scroll-hint"><span>Scroll</span><div></div></div>
 </section>
 
 <!-- ABOUT -->
@@ -196,13 +208,13 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
     <div class="reveal"><span class="sec-label">About</span>
       <h2 class="sec-title">Data-Led. <span class="hl">Growth-Focused.</span></h2></div>
     <div class="reveal" style="transition-delay:.15s">
-      <p style="font-size:15.5px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:22px">I'm a Digital Marketing & Analytics Specialist at <span style="color:#818cf8;font-weight:600">Pattern®</span>, helping global eCommerce brands build trustworthy, actionable data systems that power smarter marketing decisions.</p>
+      <p style="font-size:15px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:20px">I'm a Digital Marketing & Analytics Specialist at <span style="color:#818cf8;font-weight:600">Pattern®</span>, helping global eCommerce brands build trustworthy, actionable data systems that power smarter marketing decisions.</p>
     </div>
     <div class="reveal" style="transition-delay:.25s">
-      <p style="font-size:15.5px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:16px">I specialize in campaign analytics, audience data validation, and marketing measurement — ensuring accuracy across tracking, segmentation, attribution, and reporting.</p>
+      <p style="font-size:15px;line-height:1.8;color:rgba(255,255,255,.55);margin-top:14px">I specialize in campaign analytics, audience data validation, and marketing measurement. I ensure accuracy across tracking, segmentation, attribution, and reporting.</p>
     </div>
     <div class="reveal" style="transition-delay:.35s">
-      <p style="font-size:14px;line-height:1.8;color:rgba(255,255,255,.38);margin-top:16px;font-style:italic">When I'm not untangling data layers or reconciling revenue discrepancies, you'll find me on my motorcycle chasing the perfect corner.</p>
+      <p style="font-size:13.5px;line-height:1.8;color:rgba(255,255,255,.38);margin-top:14px;font-style:italic">When I'm not untangling data layers or reconciling revenue discrepancies, you'll find me on my motorcycle chasing the perfect corner.</p>
     </div>
     <div class="reveal stats-grid" style="transition-delay:.45s">
       <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">Years Experience</div></div>
@@ -216,20 +228,20 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
 <section class="exp-section" id="experience">
   <div class="container">
     <div class="reveal"><span class="sec-label">Experience</span>
-      <h2 class="sec-title" style="margin-bottom:36px">Where I've Made <span class="hl">Impact</span></h2></div>
+      <h2 class="sec-title" style="margin-bottom:30px">Where I've Made <span class="hl">Impact</span></h2></div>
 
-    <div class="reveal-l exp-card accent-1" style="transition-delay:.1s">
-      <div class="exp-header"><div><h3>Digital Marketing Analyst</h3><p class="exp-company">Pattern®</p></div><div style="text-align:right"><span class="exp-period">Sep 2024 — Present</span><br/><span class="exp-loc">Pune, India</span></div></div>
+    <div class="reveal-l exp-card a1" style="transition-delay:.1s">
+      <div class="exp-header"><div><h3>Digital Marketing Analyst</h3><p class="exp-company">Pattern®</p></div><div style="text-align:right"><span class="exp-period">Sep 2024 - Present</span><br/><span class="exp-loc">Pune, India</span></div></div>
       <ul><li>Architect custom tracking via GA4, Web/Server GTM, and Meta CAPI</li><li>Deep-dive audits to fix broken data layers & Shopify revenue discrepancies</li><li>Automate data pipelines using n8n, optimize queries in Supermetrics</li><li>Build scalable dashboards in Looker Studio & Tableau</li></ul>
     </div>
 
-    <div class="reveal-l exp-card accent-2" style="transition-delay:.2s">
-      <div class="exp-header"><div><h3>Web Analyst</h3><p class="exp-company">Sumeru Global Technologies</p></div><div style="text-align:right"><span class="exp-period">Mar 2022 — Sep 2024</span><br/><span class="exp-loc">Bengaluru, India</span></div></div>
+    <div class="reveal-l exp-card a2" style="transition-delay:.2s">
+      <div class="exp-header"><div><h3>Web Analyst</h3><p class="exp-company">Sumeru Global Technologies</p></div><div style="text-align:right"><span class="exp-period">Mar 2022 - Sep 2024</span><br/><span class="exp-loc">Bengaluru, India</span></div></div>
       <ul><li>Led end-to-end UA to GA4 migration with zero data loss</li><li>Architected Google Tags, Meta pixels & custom event tracking via GTM</li><li>Optimized high-performing Facebook Ad campaigns, maximizing ROAS</li></ul>
     </div>
 
-    <div class="reveal-l exp-card accent-3" style="transition-delay:.3s">
-      <div class="exp-header"><div><h3>Digital Marketing Executive</h3><p class="exp-company">Mantra Properties & Developers</p></div><div style="text-align:right"><span class="exp-period">Jul 2021 — Mar 2022</span><br/><span class="exp-loc">Pune, India</span></div></div>
+    <div class="reveal-l exp-card a3" style="transition-delay:.3s">
+      <div class="exp-header"><div><h3>Digital Marketing Executive</h3><p class="exp-company">Mantra Properties & Developers</p></div><div style="text-align:right"><span class="exp-period">Jul 2021 - Mar 2022</span><br/><span class="exp-loc">Pune, India</span></div></div>
       <ul><li>Executed campaigns across Google Ads, Facebook Ads & Taboola</li><li>Built audience segmentation models based on income & asset demographics</li><li>Connected digital lead-gen with bottom-of-funnel offline conversions</li></ul>
     </div>
   </div>
@@ -237,9 +249,9 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
 
 <!-- PROJECTS -->
 <section class="proj-section" id="projects">
-  <div class="container" style="max-width:720px">
+  <div class="container">
     <div class="reveal"><span class="sec-label">Projects</span>
-      <h2 class="sec-title" style="margin-bottom:36px">What I've <span class="hl">Built</span></h2></div>
+      <h2 class="sec-title" style="margin-bottom:28px">What I've <span class="hl">Built</span></h2></div>
     <div class="proj-grid">
       <div class="reveal proj-card" style="transition-delay:.05s">
         <div class="proj-metric">Zero Data Loss</div>
@@ -274,22 +286,22 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
   <div class="container">
     <div class="reveal"><span class="sec-label">Testimonials</span>
       <h2 class="sec-title">Kind Words from <span class="hl">Colleagues</span></h2>
-      <p style="font-size:14px;color:rgba(255,255,255,.4);margin:8px 0 32px">Real recommendations from LinkedIn</p></div>
+      <p style="font-size:13.5px;color:rgba(255,255,255,.4);margin:6px 0 26px">Real recommendations from LinkedIn</p></div>
 
     <div class="reveal-r test-card" style="transition-delay:.1s">
-      <div class="test-quote-mark">"</div>
-      <blockquote>Nikhil is an exceptional analytics professional. His in-depth knowledge of Google Analytics and his remarkable ability to build insightful dashboards in Looker Studio make him a true expert. He simplifies complex problems and explains solutions in a way everyone can understand. He's truly a one-man army when it comes to analytics and tracking — always eager to learn, explore new tools, and automate processes using AI.</blockquote>
+      <div class="test-qm">"</div>
+      <blockquote>Nikhil is an exceptional analytics professional. His in-depth knowledge of Google Analytics and his remarkable ability to build insightful dashboards in Looker Studio make him a true expert. He simplifies complex problems and explains solutions in a way everyone can understand. He's truly a one-man army when it comes to analytics and tracking, always eager to learn, explore new tools, and automate processes using AI.</blockquote>
       <div class="test-author"><div class="test-avatar">S</div><div><div class="test-name">Shubham Shukla</div><div class="test-role">SEO Assistant, Pattern Australia</div></div></div>
     </div>
 
     <div class="reveal-r test-card" style="transition-delay:.2s">
-      <div class="test-quote-mark">"</div>
+      <div class="test-qm">"</div>
       <blockquote>Nikhil's skills in web analytics helped boost user experience and ROI on several projects at Sumeru Inc. His analytical thinking and teamwork made a real impact, especially in using data to address complex challenges. He works well with others and is a great fit for roles that require strong data analysis and problem-solving.</blockquote>
       <div class="test-author"><div class="test-avatar">M</div><div><div class="test-name">Mikhil Khattar</div><div class="test-role">Head - Marketing Analytics, Sumeru Inc</div></div></div>
     </div>
 
     <div class="reveal-r test-card" style="transition-delay:.3s">
-      <div class="test-quote-mark">"</div>
+      <div class="test-qm">"</div>
       <blockquote>Nikhil is an excellent worker and helps provide strategic advice for the optimum analytical setup. He's a strong communicator that can explain complex tracking systems in simple terms. He led a number of projects at Pattern, particularly during the intense switch to GA4 that helped set up many national ecommerce retailers for success. He would be an asset to any team.</blockquote>
       <div class="test-author"><div class="test-avatar">K</div><div><div class="test-name">Katie McKelvie</div><div class="test-role">Search & Digital Experience Manager, Royal Canin</div></div></div>
     </div>
@@ -300,8 +312,8 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
 <section class="skills-section" id="skills">
   <div class="container">
     <div class="reveal"><span class="sec-label">Skills</span>
-      <h2 class="sec-title" style="margin-bottom:28px">My <span class="hl">Toolkit</span></h2></div>
-    <div class="reveal" style="transition-delay:.15s" id="skillsWrap">
+      <h2 class="sec-title" style="margin-bottom:24px">My <span class="hl">Toolkit</span></h2></div>
+    <div class="reveal" style="transition-delay:.15s">
       <span class="skill-pill">GA4</span><span class="skill-pill">Google Tag Manager</span><span class="skill-pill">Server-Side GTM</span><span class="skill-pill">Meta CAPI</span><span class="skill-pill">SQL</span><span class="skill-pill">Tableau</span><span class="skill-pill">Looker Studio</span><span class="skill-pill">Supermetrics</span><span class="skill-pill">n8n</span><span class="skill-pill">Shopify Analytics</span><span class="skill-pill">Facebook Ads</span><span class="skill-pill">Google Ads</span><span class="skill-pill">UTM Governance</span><span class="skill-pill">Attribution Modeling</span><span class="skill-pill">Data Pipelines</span><span class="skill-pill">BigQuery</span><span class="skill-pill">Audience Segmentation</span><span class="skill-pill">CRM Analytics</span>
     </div>
   </div>
@@ -312,35 +324,102 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
   <div class="container" style="text-align:center">
     <div class="reveal"><span class="sec-label">Contact</span>
       <h2 class="sec-title">Let's <span class="hl">Connect</span></h2>
-      <p style="color:rgba(255,255,255,.45);font-size:15px;margin:14px 0 32px">Have a project, opportunity, or just want to chat data? Reach out.</p></div>
+      <p style="color:rgba(255,255,255,.45);font-size:14.5px;margin:12px 0 28px">Have a project, opportunity, or just want to chat data? Reach out.</p></div>
     <div class="reveal contact-btns" style="transition-delay:.15s">
       <a href="mailto:nikhildeshpande62@gmail.com" class="contact-btn email">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         Email Me
       </a>
-      <a href="tel:+91XXXXXXXXXX" class="contact-btn phone">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <a href="tel:+919998785317" class="contact-btn phone">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
         Call Me
       </a>
       <a href="https://www.linkedin.com/in/nikhildeshpande1305" target="_blank" rel="noopener noreferrer" class="contact-btn linkedin">
-        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         LinkedIn
       </a>
     </div>
-    <footer>Crafted with precision & passion — Nikhil Deshpande © 2026</footer>
+    <footer>Crafted with precision & passion. Nikhil Deshpande © 2026</footer>
   </div>
 </section>
 
 <script>
+// SIDE TECH ANIMATIONS
+(function(){
+  const c=document.getElementById('sideAnim');
+  const techTexts=['SELECT * FROM','gtag("event",','dataLayer.push({','fbq("track",','CREATE VIEW','INSERT INTO','GROUP BY date','ORDER BY revenue','JOIN sessions ON','WHERE channel =','PARTITION BY','window.dataLayer','measurementId:','config: {send_to}','event_callback','conversion_value','attribution_model','ROAS: 4.2x','CTR: 3.8%','sessions: 12.4k'];
+  const brackets=['{  }','< />','[ ]','( )','=> {','};','/**/','::{'];
+
+  function spawn(){
+    // Tech text floaters on sides
+    for(let i=0;i<8;i++){
+      const el=document.createElement('div');
+      el.className='tech-float';
+      el.textContent=techTexts[Math.floor(Math.random()*techTexts.length)];
+      const side=Math.random()>.5;
+      el.style.left=side?`${Math.random()*18}%`:`${82+Math.random()*16}%`;
+      el.style.animationDuration=`${25+Math.random()*35}s`;
+      el.style.animationDelay=`${Math.random()*20}s`;
+      el.style.fontSize=`${10+Math.random()*4}px`;
+      c.appendChild(el);
+    }
+    // Data lines
+    for(let i=0;i<5;i++){
+      const el=document.createElement('div');
+      el.className='data-line';
+      el.style.top=`${10+Math.random()*80}%`;
+      el.style.width=`${100+Math.random()*200}px`;
+      el.style.animationDuration=`${30+Math.random()*40}s`;
+      el.style.animationDelay=`${Math.random()*15}s`;
+      c.appendChild(el);
+    }
+    // Hex dots
+    for(let i=0;i<12;i++){
+      const el=document.createElement('div');
+      el.className='hex-dot';
+      const side=Math.random()>.5;
+      el.style.left=side?`${Math.random()*15}%`:`${85+Math.random()*14}%`;
+      el.style.animationDuration=`${20+Math.random()*30}s`;
+      el.style.animationDelay=`${Math.random()*15}s`;
+      el.style.width=el.style.height=`${3+Math.random()*4}px`;
+      c.appendChild(el);
+    }
+    // Brackets
+    for(let i=0;i<6;i++){
+      const el=document.createElement('div');
+      el.className='bracket';
+      el.textContent=brackets[Math.floor(Math.random()*brackets.length)];
+      const side=Math.random()>.5;
+      el.style.left=side?`${2+Math.random()*14}%`:`${84+Math.random()*13}%`;
+      el.style.animationDuration=`${28+Math.random()*32}s`;
+      el.style.animationDelay=`${Math.random()*18}s`;
+      el.style.fontSize=`${16+Math.random()*12}px`;
+      c.appendChild(el);
+    }
+    // Grid crosses
+    for(let i=0;i<8;i++){
+      const el=document.createElement('div');
+      el.className='grid-cross';
+      el.textContent='+';
+      const side=Math.random()>.5;
+      el.style.left=side?`${Math.random()*12}%`:`${88+Math.random()*10}%`;
+      el.style.animationDuration=`${22+Math.random()*28}s`;
+      el.style.animationDelay=`${Math.random()*20}s`;
+      c.appendChild(el);
+    }
+  }
+  spawn();
+})();
+
 // PARTICLES
 (function(){
   const c=document.getElementById('particles');
   const data=[];
-  for(let i=0;i<16;i++){
+  for(let i=0;i<14;i++){
     const d=document.createElement('div');
     d.className='particle';
-    const s=5+Math.random()*15;
-    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.12+Math.random()*.25};animation:float ${2.5+Math.random()*4}s ease-in-out infinite;animation-delay:${Math.random()*3}s`;
+    const s=5+Math.random()*14;
+    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${.1+Math.random()*.22};animation:float ${2.5+Math.random()*4}s ease-in-out infinite;animation-delay:${Math.random()*3}s`;
     c.appendChild(d);
     data.push({el:d,rate:.04+i*.007});
   }
@@ -367,18 +446,17 @@ footer{margin-top:70px;padding:26px 0;border-top:1px solid rgba(255,255,255,.05)
   els.forEach(el=>obs.observe(el));
 })();
 
-// NAV SCROLL & ACTIVE STATE
+// NAV
 (function(){
   const nav=document.getElementById('navbar');
   const links=document.querySelectorAll('.nav-links a');
-  const sections=Array.from(links).map(a=>({id:a.dataset.section,el:document.getElementById(a.dataset.section)})).filter(s=>s.el);
-
+  const secs=Array.from(links).map(a=>({id:a.dataset.section,el:document.getElementById(a.dataset.section)})).filter(s=>s.el);
   window.addEventListener('scroll',()=>{
     const y=window.scrollY;
     nav.classList.toggle('scrolled',y>50);
-    let current='hero';
-    sections.forEach(s=>{if(y>=s.el.offsetTop-220)current=s.id;});
-    links.forEach(a=>{a.classList.toggle('active',a.dataset.section===current);});
+    let cur='hero';
+    secs.forEach(s=>{if(y>=s.el.offsetTop-220)cur=s.id;});
+    links.forEach(a=>{a.classList.toggle('active',a.dataset.section===cur);});
   },{passive:true});
 })();
 </script>
