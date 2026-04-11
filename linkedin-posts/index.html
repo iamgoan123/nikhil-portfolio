@@ -204,6 +204,11 @@ nav.scrolled {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.hero-title .highlight .char {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .hero-subtitle {
   font-size: clamp(16px, 2vw, 19px);
   color: var(--text-secondary); line-height: 1.65;
@@ -399,7 +404,7 @@ section { padding: 100px 48px; position: relative; }
   position: relative; height: 300vh;
 }
 .story-viewport {
-  position: sticky; top: 0; height: 100vh;
+  position: relative; top: 0; height: 100vh;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
 }
@@ -437,7 +442,7 @@ section { padding: 100px 48px; position: relative; }
 
 /* ========== HORIZONTAL SCROLL ========== */
 #horizontal-section {
-  padding: 100px 0; overflow: hidden;
+  padding: 100px 0; overflow: visible;
 }
 .horizontal-header {
   padding: 0 48px; margin-bottom: 48px;
@@ -1104,7 +1109,7 @@ function formatDate(dateStr) {
 // ============================================================
 async function loadPosts() {
   if (!firebaseReady) {
-    allPosts = [...DEMO_POSTS];
+    allPosts = [];
     renderPosts();
     updateDynamicCounts();
     return;
@@ -1112,12 +1117,11 @@ async function loadPosts() {
   try {
     const snapshot = await db.collection('linkedin_posts').orderBy('date', 'desc').get();
     allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    if (allPosts.length === 0) allPosts = [...DEMO_POSTS];
     renderPosts();
     updateDynamicCounts();
   } catch(e) {
     console.error("Error loading posts:", e);
-    allPosts = [...DEMO_POSTS];
+    allPosts = [];
     renderPosts();
     updateDynamicCounts();
   }
@@ -1642,11 +1646,9 @@ function initSectionReveals() {
     });
   });
 
-  // H-cards batch reveal
-  ScrollTrigger.batch('.h-card', {
-    onEnter: batch => gsap.from(batch, { opacity: 0, y: 30, stagger: 0.12, duration: 0.6, ease: 'back.out(1.3)' }),
-    start: 'top 88%',
-    once: true
+  // H-cards - no batch animation since they're in horizontal scroll
+  gsap.utils.toArray('.h-card').forEach(card => {
+    gsap.set(card, { opacity: 1 });
   });
 
   // Filter tags
