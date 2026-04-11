@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nikhil Deshpande | LinkedIn Posts</title>
+<meta name="description" content="Thoughts on analytics, data, GTM, and digital marketing by Nikhil Deshpande.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+/* ========== CSS VARIABLES ========== */
+:root {
+  --bg-primary: #060608;
+  --bg-secondary: #0d0d12;
+  --bg-card: #111118;
+  --bg-card-hover: #16161f;
+  --bg-elevated: #1a1a24;
+  --text-primary: #eaeaf0;
+  --text-secondary: #9898a8;
+  --text-muted: #5a5a6e;
+  --accent: #4f8fff;
+  --accent-glow: rgba(79, 143, 255, 0.15);
+  --accent-secondary: #a855f7;
+  --accent-gradient: linear-gradient(135deg, #4f8fff, #a855f7);
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+  --font-main: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --nav-height: 72px;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; }
+body {
+  font-family: var(--font-main);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { font-family: var(--font-main); cursor: none; }
+
+/* ========== SCROLL PROGRESS BAR ========== */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--accent-gradient);
+  width: 0%; z-index: 9998;
+  will-change: transform;
+}
+
+/* ========== CUSTOM CURSOR ========== */
+.cursor-dot {
+  position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.cursor-ring {
+  position: fixed; top: 0; left: 0; width: 36px; height: 36px;
+  border: 1.5px solid rgba(79, 143, 255, 0.5); border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, border-color 0.3s, background 0.3s;
+  will-change: transform;
+}
+.cursor-ring.hover {
+  width: 56px; height: 56px;
+  background: rgba(79, 143, 255, 0.08);
+  border-color: var(--accent);
+}
+.cursor-ring.click { width: 28px; height: 28px; }
+
+/* ========== PRELOADER ========== */
+#preloader {
+  position: fixed; inset: 0; z-index: 100000;
+  background: var(--bg-primary);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.loader-ring {
+  width: 50px; height: 50px; position: relative;
+}
+.loader-ring::before, .loader-ring::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+.loader-ring::before {
+  border-top-color: var(--accent);
+  animation: spin 1s linear infinite;
+}
+.loader-ring::after {
+  border-bottom-color: var(--accent-secondary);
+  animation: spin 1s linear infinite reverse;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text {
+  margin-top: 24px; font-size: 14px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+  opacity: 0; transform: translateY(10px);
+}
+
+/* ========== NAVIGATION ========== */
+nav {
+  position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; z-index: 9990;
+  transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+  border-bottom: 1px solid transparent;
+}
+nav.scrolled {
+  background: rgba(6, 6, 8, 0.82);
+  backdrop-filter: blur(20px);
+  border-bottom-color: var(--border);
+}
+.nav-logo {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: 14px; font-weight: 400; color: var(--text-secondary);
+  position: relative; transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1.5px; background: var(--accent);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a:hover::after { width: 100%; }
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--accent);
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid rgba(79, 143, 255, 0.2);
+  transition: all 0.3s;
+}
+.nav-back:hover { background: rgba(79, 143, 255, 0.1); border-color: var(--accent); }
+.mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 24px; }
+
+/* ========== HERO ========== */
+#hero {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden;
+  padding: calc(var(--nav-height) + 40px) 24px 80px;
+}
+#hero-canvas {
+  position: absolute; inset: 0; z-index: 0;
+}
+.hero-gradient {
+  position: absolute; inset: 0; z-index: 1;
+  background: radial-gradient(ellipse at 50% 30%, rgba(79, 143, 255, 0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%);
+  will-change: transform;
+}
+.hero-content { position: relative; z-index: 2; max-width: 800px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(79, 143, 255, 0.08);
+  border: 1px solid rgba(79, 143, 255, 0.15);
+  border-radius: 40px; padding: 8px 20px;
+  font-size: 13px; color: var(--accent);
+  margin-bottom: 32px;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+.hero-title {
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -2px; margin-bottom: 24px;
+}
+.hero-title .char {
+  display: inline-block;
+  opacity: 0; transform: translateY(50px) rotateX(60deg);
+  transform-origin: bottom;
+}
+.hero-title .highlight {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-subtitle {
+  font-size: clamp(16px, 2vw, 19px);
+  color: var(--text-secondary); line-height: 1.65;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center;
+  margin-top: 48px;
+}
+.hero-stat-num {
+  font-size: 36px; font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-stat-label {
+  font-size: 13px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-top: 4px;
+}
+.scroll-hint {
+  position: absolute; bottom: 32px; left: 50%;
+  transform: translateX(-50%); z-index: 3;
+  font-size: 12px; color: var(--text-muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  animation: float 2.5s ease infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+/* ========== MARQUEE ========== */
+.marquee-strip {
+  overflow: hidden; padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.marquee-track {
+  display: flex; width: max-content;
+  animation: marquee 40s linear infinite;
+}
+.marquee-track span {
+  font-size: 14px; font-weight: 500;
+  color: var(--text-primary); opacity: 0.1;
+  white-space: nowrap; padding: 0 24px;
+  text-transform: uppercase; letter-spacing: 3px;
+}
+.marquee-track .dot {
+  color: var(--accent); opacity: 0.2;
+}
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ========== SECTIONS COMMON ========== */
+section { padding: 100px 48px; position: relative; }
+.section-label {
+  font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--accent); font-weight: 500; margin-bottom: 12px;
+  opacity: 0; transform: translateY(15px);
+}
+.section-title {
+  font-size: clamp(32px, 4vw, 48px); font-weight: 700;
+  letter-spacing: -1.5px; margin-bottom: 16px;
+  opacity: 0; transform: translateY(25px); filter: blur(6px);
+}
+.section-subtext {
+  font-size: 16px; color: var(--text-secondary);
+  max-width: 560px; line-height: 1.6;
+  opacity: 0; transform: translateY(15px);
+}
+
+/* ========== FILTER TAGS ========== */
+#filters {
+  padding: 40px 48px 0;
+}
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  max-width: 1200px; margin: 0 auto;
+}
+.filter-tag {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 40px; padding: 8px 20px;
+  font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.3s;
+  user-select: none;
+}
+.filter-tag:hover { transform: translateY(-2px); border-color: var(--border-hover); color: var(--text-primary); }
+.filter-tag.active {
+  background: rgba(79, 143, 255, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ========== POSTS GRID ========== */
+#posts-section { padding-top: 40px; }
+.posts-container {
+  max-width: 1200px; margin: 0 auto;
+}
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+.post-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  will-change: transform;
+  display: flex; flex-direction: column;
+}
+.post-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px var(--accent-glow);
+}
+.post-card .skew-el { will-change: transform; }
+.post-date {
+  font-size: 12px; color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.post-date .li-icon {
+  width: 16px; height: 16px; opacity: 0.5;
+}
+.post-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 16px;
+}
+.post-tag {
+  font-size: 11px; padding: 3px 10px;
+  background: rgba(79, 143, 255, 0.07);
+  border: 1px solid rgba(79, 143, 255, 0.12);
+  border-radius: 20px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  transition: transform 0.2s;
+}
+.post-tag:hover { transform: translateY(-2px); }
+.post-text {
+  font-size: 15px; line-height: 1.7;
+  color: var(--text-secondary);
+  flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 8;
+  -webkit-box-orient: vertical; overflow: hidden;
+  margin-bottom: 24px;
+  white-space: pre-line;
+}
+.post-card:hover .post-text { color: var(--text-primary); }
+.post-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500;
+  color: var(--accent);
+  padding: 10px 22px;
+  border-radius: 40px;
+  border: 1px solid rgba(79, 143, 255, 0.2);
+  background: transparent;
+  transition: all 0.3s;
+  align-self: flex-start;
+  position: relative; overflow: hidden;
+}
+.post-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+.post-cta:hover::before { transform: translateX(100%); }
+.post-cta:hover {
+  background: rgba(79, 143, 255, 0.1);
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+.post-cta svg {
+  width: 14px; height: 14px;
+  transition: transform 0.3s;
+}
+.post-cta:hover svg { transform: translateX(3px); }
+
+.no-posts {
+  grid-column: 1 / -1; text-align: center;
+  padding: 80px 20px; color: var(--text-muted);
+  font-size: 16px;
+}
+
+/* ========== PINNED SCROLL STORYTELLING ========== */
+#story-section {
+  padding: 0; position: relative;
+}
+.story-container {
+  position: relative; height: 300vh;
+}
+.story-viewport {
+  position: sticky; top: 0; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.story-panel {
+  position: absolute; text-align: center;
+  max-width: 700px; padding: 0 24px;
+  opacity: 0;
+}
+.story-panel.active { opacity: 1; }
+.story-panel h2 {
+  font-size: clamp(28px, 4vw, 44px); font-weight: 700;
+  letter-spacing: -1px; margin-bottom: 16px;
+}
+.story-panel h2 .highlight {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.story-panel p {
+  font-size: 17px; color: var(--text-secondary);
+  line-height: 1.7;
+}
+.story-dots {
+  position: absolute; bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 10px; z-index: 5;
+}
+.story-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-muted); transition: all 0.3s;
+}
+.story-dot.active {
+  background: var(--accent); transform: scale(1.3);
+}
+
+/* ========== HORIZONTAL SCROLL ========== */
+#horizontal-section {
+  padding: 100px 0; overflow: hidden;
+}
+.horizontal-header {
+  padding: 0 48px; margin-bottom: 48px;
+}
+.horizontal-track-wrapper {
+  overflow: visible;
+}
+.horizontal-track {
+  display: flex; gap: 24px;
+  padding: 0 48px;
+  width: max-content;
+}
+.h-card {
+  width: 340px; flex-shrink: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: all 0.4s;
+}
+.h-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+.h-card-icon {
+  font-size: 32px; margin-bottom: 16px;
+}
+.h-card h3 {
+  font-size: 20px; font-weight: 600;
+  margin-bottom: 10px;
+}
+.h-card p {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ========== COUNTERS ========== */
+#counters {
+  padding: 80px 48px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.counters-grid {
+  display: flex; justify-content: center;
+  gap: 80px; flex-wrap: wrap;
+  max-width: 900px; margin: 0 auto;
+  text-align: center;
+}
+.counter-item .counter-num {
+  font-size: 52px; font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.counter-item .counter-label {
+  font-size: 13px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-top: 6px;
+}
+
+/* ========== CTA / FOOTER ========== */
+#cta {
+  text-align: center; padding: 120px 48px;
+}
+#cta h2 {
+  font-size: clamp(28px, 4vw, 44px); font-weight: 700;
+  margin-bottom: 16px; letter-spacing: -1px;
+}
+#cta p {
+  color: var(--text-secondary); font-size: 17px;
+  max-width: 500px; margin: 0 auto 32px; line-height: 1.6;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 36px; border-radius: 50px;
+  background: var(--accent-gradient);
+  color: #fff; font-size: 15px; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.cta-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+.cta-btn:hover::before { transform: translateX(100%); }
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(79, 143, 255, 0.3); }
+
+footer {
+  text-align: center; padding: 32px 48px;
+  border-top: 1px solid var(--border);
+  font-size: 13px; color: var(--text-muted);
+}
+
+/* ========== ADMIN PANEL ========== */
+#admin-overlay {
+  display: none; position: fixed; inset: 0; z-index: 99000;
+  background: rgba(6, 6, 8, 0.95);
+  backdrop-filter: blur(20px);
+  overflow-y: auto;
+  padding: 100px 24px 60px;
+}
+#admin-overlay.visible { display: block; }
+.admin-container {
+  max-width: 640px; margin: 0 auto;
+}
+.admin-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px;
+}
+.admin-subtitle {
+  color: var(--text-muted); font-size: 14px; margin-bottom: 40px;
+}
+.admin-field { margin-bottom: 20px; }
+.admin-field label {
+  display: block; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.admin-field input, .admin-field textarea, .admin-field select {
+  width: 100%; padding: 14px 18px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-family: var(--font-main); font-size: 15px;
+  outline: none; transition: border-color 0.3s;
+}
+.admin-field input:focus, .admin-field textarea:focus {
+  border-color: var(--accent);
+}
+.admin-field textarea { min-height: 200px; resize: vertical; line-height: 1.7; }
+.admin-tags-input {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 8px;
+}
+.admin-tags-input .tag-option {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.3s;
+  user-select: none;
+}
+.admin-tags-input .tag-option.selected {
+  background: rgba(79, 143, 255, 0.1);
+  border-color: var(--accent); color: var(--accent);
+}
+.admin-btn-row { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+.admin-btn {
+  padding: 12px 28px; border-radius: 40px;
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.3s;
+}
+.admin-btn-primary {
+  background: var(--accent-gradient); color: #fff;
+}
+.admin-btn-primary:hover { box-shadow: 0 10px 40px rgba(79, 143, 255, 0.3); }
+.admin-btn-secondary {
+  background: var(--bg-card); color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.admin-btn-secondary:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.admin-btn-danger {
+  background: rgba(255, 70, 70, 0.1); color: #ff4646;
+  border: 1px solid rgba(255, 70, 70, 0.2);
+}
+.admin-btn-danger:hover { background: rgba(255, 70, 70, 0.2); }
+
+.admin-posts-list { margin-top: 48px; }
+.admin-posts-list h3 {
+  font-size: 18px; font-weight: 600; margin-bottom: 16px;
+}
+.admin-post-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px;
+  margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 16px;
+}
+.admin-post-item .post-preview {
+  flex: 1;
+}
+.admin-post-item .post-preview .date {
+  font-size: 12px; color: var(--text-muted);
+  font-family: var(--font-mono); margin-bottom: 6px;
+}
+.admin-post-item .post-preview .text {
+  font-size: 14px; color: var(--text-secondary);
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.admin-post-item .actions {
+  display: flex; gap: 8px; flex-shrink: 0;
+}
+.admin-post-item .actions button {
+  padding: 6px 14px; border-radius: 6px;
+  font-size: 12px; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text-secondary);
+  cursor: pointer; transition: all 0.3s;
+}
+.admin-post-item .actions .del-btn {
+  border-color: rgba(255, 70, 70, 0.2); color: #ff4646;
+}
+
+/* ========== PASSWORD MODAL ========== */
+#password-modal {
+  display: none; position: fixed; inset: 0; z-index: 99001;
+  background: rgba(6, 6, 8, 0.95);
+  backdrop-filter: blur(20px);
+  align-items: center; justify-content: center;
+}
+#password-modal.visible { display: flex; }
+.password-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 40px;
+  max-width: 380px; width: 100%; text-align: center;
+}
+.password-box h3 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.password-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+.password-box input {
+  width: 100%; padding: 14px; text-align: center;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 16px; font-family: var(--font-mono);
+  outline: none; margin-bottom: 16px;
+}
+.password-box input:focus { border-color: var(--accent); }
+.password-error { color: #ff4646; font-size: 13px; margin-bottom: 12px; display: none; }
+.password-box .admin-btn { width: 100%; }
+
+/* ========== TOAST ========== */
+.toast {
+  position: fixed; bottom: 32px; right: 32px;
+  padding: 14px 24px; border-radius: var(--radius-sm);
+  font-size: 14px; z-index: 99999;
+  transform: translateY(20px); opacity: 0;
+  transition: all 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.3); color: #34d399; }
+.toast.error { background: rgba(255, 70, 70, 0.15); border: 1px solid rgba(255, 70, 70, 0.3); color: #ff4646; }
+
+/* ========== LOADING SPINNER ========== */
+.posts-loading {
+  grid-column: 1 / -1; text-align: center; padding: 60px;
+}
+.mini-spinner {
+  width: 28px; height: 28px; margin: 0 auto 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor-dot, .cursor-ring { display: none !important; }
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: fixed; top: var(--nav-height); left: 0;
+    width: 100%; background: rgba(6, 6, 8, 0.96);
+    backdrop-filter: blur(20px);
+    padding: 24px; gap: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-menu-btn { display: block; }
+  section { padding: 60px 20px; }
+  #filters { padding: 24px 20px 0; }
+  .posts-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 20px; }
+  .counters-grid { gap: 40px; }
+  .horizontal-track {
+    flex-direction: column; width: 100%;
+    padding: 0 20px;
+  }
+  .h-card { width: 100%; }
+  .story-container { height: auto; }
+  .story-viewport { position: relative; height: auto; flex-direction: column; gap: 60px; padding: 60px 20px; }
+  .story-panel { position: relative; opacity: 1; }
+  .story-dots { display: none; }
+  .admin-post-item { flex-direction: column; }
+  #cta { padding: 80px 20px; }
+  footer { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div id="scroll-progress"></div>
+
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Loading Posts</div>
+</div>
+
+<!-- Nav -->
+<nav id="navbar">
+  <a href="https://nikhil-portfolio-rouge-phi.vercel.app/" class="nav-logo">N<span>D</span>.</a>
+  <div class="nav-links" id="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#posts-section">Posts</a>
+    <a href="#counters">Stats</a>
+    <a href="#cta">Connect</a>
+    <a href="https://nikhil-portfolio-rouge-phi.vercel.app/" class="nav-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Portfolio
+    </a>
+  </div>
+  <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-gradient" id="hero-gradient"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Updated Weekly
+    </div>
+    <h1 class="hero-title" id="hero-title">My <span class="highlight">LinkedIn</span> Posts</h1>
+    <p class="hero-subtitle">Thoughts on analytics, data strategy, GTM, and lessons learned building measurement systems for global brands.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num" data-target="0" id="stat-total">0</div>
+        <div class="hero-stat-label">Posts Shared</div>
+      </div>
+      <div>
+        <div class="hero-stat-num" data-target="0" id="stat-topics">0</div>
+        <div class="hero-stat-label">Topics</div>
+      </div>
+      <div>
+        <div class="hero-stat-num" data-target="0" id="stat-year">2026</div>
+        <div class="hero-stat-label">Posting Since</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span>Analytics</span><span class="dot">·</span>
+    <span>GA4</span><span class="dot">·</span>
+    <span>Google Tag Manager</span><span class="dot">·</span>
+    <span>Data Strategy</span><span class="dot">·</span>
+    <span>Server-Side Tracking</span><span class="dot">·</span>
+    <span>Meta CAPI</span><span class="dot">·</span>
+    <span>Career Growth</span><span class="dot">·</span>
+    <span>Marketing Tech</span><span class="dot">·</span>
+    <span>AI in Marketing</span><span class="dot">·</span>
+    <span>Shopify</span><span class="dot">·</span>
+    <span>Attribution</span><span class="dot">·</span>
+    <span>Looker Studio</span><span class="dot">·</span>
+    <!-- duplicate for seamless loop -->
+    <span>Analytics</span><span class="dot">·</span>
+    <span>GA4</span><span class="dot">·</span>
+    <span>Google Tag Manager</span><span class="dot">·</span>
+    <span>Data Strategy</span><span class="dot">·</span>
+    <span>Server-Side Tracking</span><span class="dot">·</span>
+    <span>Meta CAPI</span><span class="dot">·</span>
+    <span>Career Growth</span><span class="dot">·</span>
+    <span>Marketing Tech</span><span class="dot">·</span>
+    <span>AI in Marketing</span><span class="dot">·</span>
+    <span>Shopify</span><span class="dot">·</span>
+    <span>Attribution</span><span class="dot">·</span>
+    <span>Looker Studio</span><span class="dot">·</span>
+  </div>
+</div>
+
+<!-- Pinned Scroll Story -->
+<section id="story-section">
+  <div class="story-container" id="story-container">
+    <div class="story-viewport" id="story-viewport">
+      <div class="story-panel active" data-panel="0">
+        <h2>I write about what I <span class="highlight">learn</span></h2>
+        <p>Every week I share a lesson from the trenches — building tracking systems, debugging data layers, or navigating the martech maze for global brands.</p>
+      </div>
+      <div class="story-panel" data-panel="1">
+        <h2>Real problems, <span class="highlight">real solutions</span></h2>
+        <p>No fluff or engagement bait. Just honest takes on analytics challenges, implementation patterns, and the tools that actually work in production.</p>
+      </div>
+      <div class="story-panel" data-panel="2">
+        <h2>Built for <span class="highlight">practitioners</span></h2>
+        <p>Whether you're a marketer learning GA4, a developer wiring up GTM, or a founder trying to trust your data — these posts are for you.</p>
+      </div>
+    </div>
+    <div class="story-dots" id="story-dots">
+      <div class="story-dot active" data-dot="0"></div>
+      <div class="story-dot" data-dot="1"></div>
+      <div class="story-dot" data-dot="2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Filters -->
+<div id="filters">
+  <div class="filter-bar" id="filter-bar">
+    <div class="filter-tag active" data-filter="all">All Posts</div>
+    <!-- Dynamic tags populated by JS -->
+  </div>
+</div>
+
+<!-- Posts Grid -->
+<section id="posts-section">
+  <div class="posts-container">
+    <div class="posts-grid" id="posts-grid">
+      <div class="posts-loading">
+        <div class="mini-spinner"></div>
+        <div style="color: var(--text-muted); font-size: 14px;">Loading posts...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Horizontal Scroll Topics -->
+<section id="horizontal-section">
+  <div class="horizontal-header">
+    <div class="section-label">Topics I Cover</div>
+    <div class="section-title">Deep Dives & Quick Takes</div>
+  </div>
+  <div class="horizontal-track-wrapper">
+    <div class="horizontal-track" id="horizontal-track">
+      <div class="h-card skew-el">
+        <div class="h-card-icon">📊</div>
+        <h3>GA4 & Analytics</h3>
+        <p>Migration strategies, event tracking patterns, custom dimensions, and making GA4 work for eCommerce.</p>
+      </div>
+      <div class="h-card skew-el">
+        <div class="h-card-icon">🏷️</div>
+        <h3>Tag Management</h3>
+        <p>GTM architectures, server-side setups, debugging workflows, and container governance at scale.</p>
+      </div>
+      <div class="h-card skew-el">
+        <div class="h-card-icon">📈</div>
+        <h3>Marketing Measurement</h3>
+        <p>Attribution models, ROAS optimization, Meta CAPI, and connecting ad spend to actual revenue.</p>
+      </div>
+      <div class="h-card skew-el">
+        <div class="h-card-icon">🤖</div>
+        <h3>AI & Automation</h3>
+        <p>Using AI as a force multiplier — from n8n workflows to AI-powered audit tools and report generation.</p>
+      </div>
+      <div class="h-card skew-el">
+        <div class="h-card-icon">🔧</div>
+        <h3>Building Tools</h3>
+        <p>Side projects, open-source tools, and the "vibe coding" philosophy — ship fast, solve real problems.</p>
+      </div>
+      <div class="h-card skew-el">
+        <div class="h-card-icon">🚀</div>
+        <h3>Career & Growth</h3>
+        <p>Lessons on navigating the analytics career path, upskilling, and standing out as a practitioner.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Counters -->
+<section id="counters">
+  <div class="counters-grid">
+    <div class="counter-item">
+      <div class="counter-num" data-target="0" id="counter-posts">0</div>
+      <div class="counter-label">Posts Published</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" data-target="0" id="counter-topics">0</div>
+      <div class="counter-label">Topics Covered</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" data-target="52" id="counter-weeks">0</div>
+      <div class="counter-label">Weeks of Writing</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="section-label">Let's Connect</div>
+  <h2 class="section-title">Want to discuss data?</h2>
+  <p class="section-subtext" style="margin: 0 auto 32px;">Follow me on LinkedIn for weekly posts, or reach out if you want to chat analytics, tracking, or career growth.</p>
+  <a href="https://www.linkedin.com/in/nikhildeshpande1305" target="_blank" class="cta-btn" data-magnetic>
+    Follow on LinkedIn
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+  </a>
+</section>
+
+<!-- Footer -->
+<footer>
+  Crafted with precision & passion. Nikhil Deshpande © 2026
+</footer>
+
+<!-- Password Modal -->
+<div id="password-modal">
+  <div class="password-box">
+    <h3>Admin Access</h3>
+    <p>Enter your password to manage posts</p>
+    <input type="password" id="admin-password" placeholder="••••••••" autocomplete="off">
+    <div class="password-error" id="password-error">Incorrect password. Try again.</div>
+    <button class="admin-btn admin-btn-primary" id="password-submit">Unlock</button>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="admin-overlay">
+  <div class="admin-container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+      <div class="admin-title">📝 Post Manager</div>
+      <button class="admin-btn admin-btn-secondary" id="admin-close">✕ Close</button>
+    </div>
+    <div class="admin-subtitle">Add, edit, or remove your LinkedIn posts.</div>
+
+    <div class="admin-field">
+      <label>Post Text</label>
+      <textarea id="admin-text" placeholder="Paste your LinkedIn post here..."></textarea>
+    </div>
+    <div class="admin-field">
+      <label>LinkedIn Post URL</label>
+      <input type="url" id="admin-url" placeholder="https://www.linkedin.com/posts/...">
+    </div>
+    <div class="admin-field">
+      <label>Date</label>
+      <input type="date" id="admin-date">
+    </div>
+    <div class="admin-field">
+      <label>Tags (click to select)</label>
+      <div class="admin-tags-input" id="admin-tags">
+        <div class="tag-option" data-tag="Analytics">Analytics</div>
+        <div class="tag-option" data-tag="GA4">GA4</div>
+        <div class="tag-option" data-tag="GTM">GTM</div>
+        <div class="tag-option" data-tag="Server-Side">Server-Side</div>
+        <div class="tag-option" data-tag="Meta CAPI">Meta CAPI</div>
+        <div class="tag-option" data-tag="Measurement">Measurement</div>
+        <div class="tag-option" data-tag="AI">AI</div>
+        <div class="tag-option" data-tag="Automation">Automation</div>
+        <div class="tag-option" data-tag="Career">Career</div>
+        <div class="tag-option" data-tag="Tools">Tools</div>
+        <div class="tag-option" data-tag="Shopify">Shopify</div>
+        <div class="tag-option" data-tag="Looker Studio">Looker Studio</div>
+        <div class="tag-option" data-tag="Attribution">Attribution</div>
+        <div class="tag-option" data-tag="Opinion">Opinion</div>
+      </div>
+    </div>
+    <div class="admin-field">
+      <label>Custom Tag (optional)</label>
+      <input type="text" id="admin-custom-tag" placeholder="Add a custom tag and press Enter">
+    </div>
+
+    <div class="admin-btn-row">
+      <button class="admin-btn admin-btn-primary" id="admin-publish">Publish Post</button>
+      <button class="admin-btn admin-btn-secondary" id="admin-clear">Clear Form</button>
+    </div>
+
+    <div class="admin-posts-list" id="admin-posts-list">
+      <h3>Existing Posts</h3>
+      <div id="admin-existing-posts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// FIREBASE CONFIG — REPLACE THESE WITH YOUR VALUES
+// ============================================================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBEKvlEfKzgYQM0ph2hGpf6seFQISqoNIg",
+  authDomain: "nikhil-linkedin-posts.firebaseapp.com",
+  projectId: "nikhil-linkedin-posts",
+  storageBucket: "nikhil-linkedin-posts.firebasestorage.app",
+  messagingSenderId: "792578636104",
+  appId: "1:792578636104:web:203a74e65aa6e3fed15b7d"
+};
+
+// Admin password — change this!
+const ADMIN_PASSWORD = "nikhil2026";
+
+// ============================================================
+// FIREBASE INIT
+// ============================================================
+let db;
+let firebaseReady = false;
+try {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.firestore();
+  firebaseReady = true;
+} catch(e) {
+  console.warn("Firebase not configured. Using demo data.", e);
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let allPosts = [];
+let activeFilter = 'all';
+let isAdmin = false;
+let editingPostId = null;
+
+// ============================================================
+// DEMO DATA (shown when Firebase isn't configured)
+// ============================================================
+const DEMO_POSTS = [
+  {
+    id: 'demo1',
+    text: "🔍 Stop guessing. Start measuring.\n\nI spent last week auditing a Shopify Plus store's GA4 setup. They had 47 custom events. Only 12 were firing correctly.\n\nThe problem wasn't the tool — it was the implementation. No naming conventions, no documentation, no QA process.\n\nHere's what I fixed:\n→ Standardized event naming (snake_case, always)\n→ Built a tracking plan spreadsheet as the source of truth\n→ Set up real-time validation in GTM preview mode\n→ Added automated alerts for broken events\n\nThe result? Clean data in 5 days. Trustworthy reports by week 2.\n\nIf your data team doesn't trust the numbers, the problem isn't GA4. It's process.",
+    url: "https://www.linkedin.com/in/nikhildeshpande1305",
+    date: "2026-04-07",
+    tags: ["GA4", "Analytics", "Shopify"]
+  },
+  {
+    id: 'demo2',
+    text: "🤖 I built an analytics auditor using AI in a weekend.\n\nPaste any URL → it detects the tech stack, checks GTM setup, audits GA4 implementation.\n\nPowered by Groq AI + Python.\n\nWhy? Because manual audits take hours. And every new client engagement starts with the same question: 'Is the tracking even working?'\n\nNow I have an answer in seconds.\n\nThis is what I mean by 'vibe coding' — I'm not an engineer. But I understand the problem, I know the logic, and AI helps me ship the solution.\n\nLink in comments 👇",
+    url: "https://www.linkedin.com/in/nikhildeshpande1305",
+    date: "2026-03-31",
+    tags: ["AI", "Tools", "Analytics"]
+  },
+  {
+    id: 'demo3',
+    text: "📊 The hardest part of analytics isn't the setup.\n\nIt's getting people to trust the data.\n\nYou can have perfect GA4 config, clean GTM containers, and beautiful dashboards. But if stakeholders don't understand what the numbers mean — or worse, if the numbers don't match their other reports — none of it matters.\n\nThat's why I spend as much time on documentation and alignment as I do on implementation.\n\nA tracking plan isn't just a spreadsheet. It's a contract between analytics and the business.",
+    url: "https://www.linkedin.com/in/nikhildeshpande1305",
+    date: "2026-03-24",
+    tags: ["Analytics", "Career", "Measurement"]
+  },
+  {
+    id: 'demo4',
+    text: "🏷️ Server-side GTM changed the game for us at Pattern.\n\nHere's why:\n\n1. Ad blockers can't touch it — we recovered ~15% of lost conversion data\n2. First-party cookies last longer — better attribution windows\n3. Meta CAPI + server-side = more signal for the ad algorithms\n4. Page speed improved because we moved heavy tags off the browser\n\nThe setup isn't trivial. You need a cloud server, proper domain mapping, and careful testing. But the ROI is massive for any serious eCommerce brand.\n\nIf you're still running everything client-side in 2026, you're leaving money and data on the table.",
+    url: "https://www.linkedin.com/in/nikhildeshpande1305",
+    date: "2026-03-17",
+    tags: ["GTM", "Server-Side", "Meta CAPI"]
+  }
+];
+
+// ============================================================
+// UTILITY
+// ============================================================
+const isMobile = window.innerWidth < 769;
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ============================================================
+// FIREBASE OPERATIONS
+// ============================================================
+async function loadPosts() {
+  if (!firebaseReady) {
+    allPosts = [...DEMO_POSTS];
+    renderPosts();
+    updateDynamicCounts();
+    return;
+  }
+  try {
+    const snapshot = await db.collection('linkedin_posts').orderBy('date', 'desc').get();
+    allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if (allPosts.length === 0) allPosts = [...DEMO_POSTS];
+    renderPosts();
+    updateDynamicCounts();
+  } catch(e) {
+    console.error("Error loading posts:", e);
+    allPosts = [...DEMO_POSTS];
+    renderPosts();
+    updateDynamicCounts();
+  }
+}
+
+async function savePost(post) {
+  if (!firebaseReady) {
+    post.id = 'local_' + Date.now();
+    allPosts.unshift(post);
+    renderPosts();
+    updateDynamicCounts();
+    showToast("Post saved (demo mode — configure Firebase to persist)");
+    return;
+  }
+  try {
+    if (editingPostId) {
+      await db.collection('linkedin_posts').doc(editingPostId).update(post);
+      const idx = allPosts.findIndex(p => p.id === editingPostId);
+      if (idx > -1) allPosts[idx] = { ...post, id: editingPostId };
+      editingPostId = null;
+      showToast("Post updated!");
+    } else {
+      const ref = await db.collection('linkedin_posts').add(post);
+      allPosts.unshift({ id: ref.id, ...post });
+      showToast("Post published!");
+    }
+    renderPosts();
+    updateDynamicCounts();
+  } catch(e) {
+    showToast("Error saving post", "error");
+  }
+}
+
+async function deletePost(id) {
+  if (!confirm("Delete this post?")) return;
+  if (firebaseReady) {
+    try { await db.collection('linkedin_posts').doc(id).delete(); } catch(e) {}
+  }
+  allPosts = allPosts.filter(p => p.id !== id);
+  renderPosts();
+  updateDynamicCounts();
+  renderAdminPosts();
+  showToast("Post deleted");
+}
+
+// ============================================================
+// RENDER POSTS
+// ============================================================
+function renderPosts() {
+  const grid = document.getElementById('posts-grid');
+  const filtered = activeFilter === 'all' ? allPosts : allPosts.filter(p => p.tags && p.tags.includes(activeFilter));
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-posts">No posts found. ' + (isAdmin ? 'Use the admin panel to add your first post!' : '') + '</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(post => `
+    <div class="post-card skew-el">
+      <div class="post-date">
+        <svg class="li-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        ${formatDate(post.date)}
+      </div>
+      <div class="post-tags">
+        ${(post.tags || []).map(t => `<span class="post-tag">${t}</span>`).join('')}
+      </div>
+      <div class="post-text">${escapeHtml(post.text)}</div>
+      <a href="${post.url}" target="_blank" rel="noopener" class="post-cta" data-magnetic>
+        Read on LinkedIn
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+      </a>
+    </div>
+  `).join('');
+
+  // Re-init scroll animations for new cards
+  if (typeof ScrollTrigger !== 'undefined') {
+    ScrollTrigger.batch('.post-card', {
+      onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.12, duration: 0.6, ease: 'back.out(1.3)' }),
+      start: 'top 88%',
+      once: true
+    });
+    gsap.set('.post-card', { opacity: 0, y: 40 });
+  }
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+function updateDynamicCounts() {
+  const total = allPosts.length;
+  const allTags = [...new Set(allPosts.flatMap(p => p.tags || []))];
+  const topicCount = allTags.length;
+
+  // Update hero stats targets
+  document.getElementById('stat-total').setAttribute('data-target', total);
+  document.getElementById('stat-topics').setAttribute('data-target', topicCount);
+
+  // Update counter section targets
+  document.getElementById('counter-posts').setAttribute('data-target', total);
+  document.getElementById('counter-topics').setAttribute('data-target', topicCount);
+
+  // Build filter tags
+  const filterBar = document.getElementById('filter-bar');
+  filterBar.innerHTML = '<div class="filter-tag active" data-filter="all">All Posts</div>' +
+    allTags.map(t => `<div class="filter-tag" data-filter="${t}">${t}</div>`).join('');
+
+  // Rebind filter clicks
+  filterBar.querySelectorAll('.filter-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      filterBar.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+      activeFilter = tag.dataset.filter;
+      renderPosts();
+    });
+  });
+}
+
+// ============================================================
+// ADMIN PANEL
+// ============================================================
+function initAdmin() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('admin') === 'true') {
+    document.getElementById('password-modal').classList.add('visible');
+  }
+
+  document.getElementById('password-submit').addEventListener('click', checkPassword);
+  document.getElementById('admin-password').addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+  document.getElementById('admin-close').addEventListener('click', () => {
+    document.getElementById('admin-overlay').classList.remove('visible');
+    document.body.style.overflow = '';
+  });
+  document.getElementById('admin-publish').addEventListener('click', publishPost);
+  document.getElementById('admin-clear').addEventListener('click', clearForm);
+
+  // Tag selection
+  document.getElementById('admin-tags').addEventListener('click', e => {
+    if (e.target.classList.contains('tag-option')) {
+      e.target.classList.toggle('selected');
+    }
+  });
+
+  // Custom tag
+  document.getElementById('admin-custom-tag').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      const tag = e.target.value.trim();
+      const el = document.createElement('div');
+      el.className = 'tag-option selected';
+      el.dataset.tag = tag;
+      el.textContent = tag;
+      el.addEventListener('click', () => el.classList.toggle('selected'));
+      document.getElementById('admin-tags').appendChild(el);
+      e.target.value = '';
+    }
+  });
+
+  // Set default date
+  document.getElementById('admin-date').valueAsDate = new Date();
+}
+
+function checkPassword() {
+  const pwd = document.getElementById('admin-password').value;
+  if (pwd === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.getElementById('password-modal').classList.remove('visible');
+    document.getElementById('admin-overlay').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+    renderAdminPosts();
+  } else {
+    document.getElementById('password-error').style.display = 'block';
+    document.getElementById('admin-password').value = '';
+  }
+}
+
+function publishPost() {
+  const text = document.getElementById('admin-text').value.trim();
+  const url = document.getElementById('admin-url').value.trim();
+  const date = document.getElementById('admin-date').value;
+  const tags = [...document.querySelectorAll('#admin-tags .tag-option.selected')].map(t => t.dataset.tag);
+
+  if (!text) { showToast("Post text is required", "error"); return; }
+  if (!date) { showToast("Date is required", "error"); return; }
+
+  savePost({
+    text,
+    url: url || 'https://www.linkedin.com/in/nikhildeshpande1305',
+    date,
+    tags
+  });
+
+  clearForm();
+  renderAdminPosts();
+}
+
+function clearForm() {
+  document.getElementById('admin-text').value = '';
+  document.getElementById('admin-url').value = '';
+  document.getElementById('admin-date').valueAsDate = new Date();
+  document.querySelectorAll('#admin-tags .tag-option').forEach(t => t.classList.remove('selected'));
+  editingPostId = null;
+  document.getElementById('admin-publish').textContent = 'Publish Post';
+}
+
+function renderAdminPosts() {
+  const container = document.getElementById('admin-existing-posts');
+  if (allPosts.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">No posts yet.</p>';
+    return;
+  }
+  container.innerHTML = allPosts.map(p => `
+    <div class="admin-post-item">
+      <div class="post-preview">
+        <div class="date">${formatDate(p.date)}</div>
+        <div class="text">${escapeHtml(p.text)}</div>
+      </div>
+      <div class="actions">
+        <button onclick="editPost('${p.id}')">Edit</button>
+        <button class="del-btn" onclick="deletePost('${p.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.editPost = function(id) {
+  const post = allPosts.find(p => p.id === id);
+  if (!post) return;
+  editingPostId = id;
+  document.getElementById('admin-text').value = post.text;
+  document.getElementById('admin-url').value = post.url;
+  document.getElementById('admin-date').value = post.date;
+  document.querySelectorAll('#admin-tags .tag-option').forEach(t => {
+    t.classList.toggle('selected', (post.tags || []).includes(t.dataset.tag));
+  });
+  document.getElementById('admin-publish').textContent = 'Update Post';
+  document.getElementById('admin-overlay').scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// ============================================================
+// PRELOADER
+// ============================================================
+function initPreloader() {
+  const preloader = document.getElementById('preloader');
+  const loaderText = preloader.querySelector('.loader-text');
+
+  gsap.to(loaderText, { opacity: 1, y: 0, duration: 0.6, delay: 0.3 });
+
+  gsap.to(preloader, {
+    opacity: 0,
+    duration: 0.6,
+    delay: 1.8,
+    onComplete: () => {
+      preloader.style.display = 'none';
+      animateHeroEntrance();
+    }
+  });
+}
+
+// ============================================================
+// HERO TITLE CHARACTER SPLIT
+// ============================================================
+function splitHeroTitle() {
+  const el = document.getElementById('hero-title');
+  const html = el.innerHTML;
+  // Parse while preserving <span> tags
+  let result = '';
+  let inTag = false;
+  let tagBuffer = '';
+
+  for (let i = 0; i < html.length; i++) {
+    const ch = html[i];
+    if (ch === '<') { inTag = true; tagBuffer += ch; continue; }
+    if (inTag) {
+      tagBuffer += ch;
+      if (ch === '>') {
+        inTag = false;
+        if (tagBuffer.startsWith('</')) {
+          result += tagBuffer;
+        } else {
+          result += tagBuffer;
+        }
+        tagBuffer = '';
+      }
+      continue;
+    }
+    if (ch === ' ') {
+      result += ' ';
+    } else {
+      result += `<span class="char">${ch}</span>`;
+    }
+  }
+  el.innerHTML = result;
+}
+
+function animateHeroEntrance() {
+  const chars = document.querySelectorAll('.hero-title .char');
+  gsap.to(chars, {
+    opacity: 1, y: 0, rotateX: 0,
+    stagger: 0.025,
+    duration: 0.8,
+    ease: 'power3.out'
+  });
+
+  gsap.from('.hero-badge', { opacity: 0, y: 20, duration: 0.6, delay: 0.2 });
+  gsap.from('.hero-subtitle', { opacity: 0, y: 20, duration: 0.6, delay: 0.6 });
+  gsap.from('.hero-stats > div', { opacity: 0, y: 20, stagger: 0.15, duration: 0.6, delay: 0.9 });
+  gsap.from('.scroll-hint', { opacity: 0, duration: 0.6, delay: 1.4 });
+
+  // Animate hero stat numbers
+  animateNumber('stat-total');
+  animateNumber('stat-topics');
+}
+
+function animateNumber(id) {
+  const el = document.getElementById(id);
+  const target = parseInt(el.getAttribute('data-target'));
+  gsap.to({ val: 0 }, {
+    val: target, duration: 2.2, ease: 'power2.out', delay: 1,
+    onUpdate: function() { el.textContent = Math.round(this.targets()[0].val); }
+  });
+}
+
+// ============================================================
+// THREE.JS PARTICLE HERO
+// ============================================================
+function initThreeHero() {
+  if (isMobile) return;
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Particles
+  const particleCount = 300;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 12;
+  }
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const material = new THREE.PointsMaterial({
+    color: 0x4f8fff, size: 0.02, transparent: true, opacity: 0.6
+  });
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+
+  // Wireframe shapes
+  const shapes = [];
+  const geos = [
+    new THREE.IcosahedronGeometry(0.5, 0),
+    new THREE.OctahedronGeometry(0.4, 0),
+    new THREE.TetrahedronGeometry(0.35, 0)
+  ];
+  const colors = [0x4f8fff, 0xa855f7, 0x4f8fff];
+
+  for (let i = 0; i < 3; i++) {
+    const mat = new THREE.MeshBasicMaterial({ color: colors[i], wireframe: true, transparent: true, opacity: 0.12 });
+    const mesh = new THREE.Mesh(geos[i], mat);
+    mesh.position.set((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3);
+    mesh.userData = { rx: Math.random() * 0.005, ry: Math.random() * 0.005 };
+    scene.add(mesh);
+    shapes.push(mesh);
+  }
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    points.rotation.y += 0.0005;
+    points.rotation.x += 0.0002;
+    points.position.x += (mouseX * 0.3 - points.position.x) * 0.02;
+    points.position.y += (-mouseY * 0.3 - points.position.y) * 0.02;
+
+    shapes.forEach(s => {
+      s.rotation.x += s.userData.rx;
+      s.rotation.y += s.userData.ry;
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+// ============================================================
+// CUSTOM CURSOR
+// ============================================================
+function initCursor() {
+  if (isMobile) return;
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let cx = 0, cy = 0, dx = 0, dy = 0;
+
+  document.addEventListener('mousemove', e => { cx = e.clientX; cy = e.clientY; }, { passive: true });
+
+  function loop() {
+    dx += (cx - dx) * 0.12;
+    dy += (cy - dy) * 0.12;
+    dot.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    ring.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  document.addEventListener('mousedown', () => ring.classList.add('click'));
+  document.addEventListener('mouseup', () => ring.classList.remove('click'));
+
+  // Hover detection
+  const hoverEls = 'a, button, .filter-tag, .post-card, .h-card, [data-magnetic]';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverEls)) ring.classList.add('hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverEls)) ring.classList.remove('hover');
+  });
+}
+
+// ============================================================
+// MAGNETIC BUTTONS
+// ============================================================
+function initMagnetic() {
+  if (isMobile) return;
+  document.querySelectorAll('[data-magnetic]').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3 });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+    });
+  });
+}
+
+// ============================================================
+// SCROLL PROGRESS
+// ============================================================
+function initScrollProgress() {
+  gsap.to('#scroll-progress', {
+    width: '100%',
+    ease: 'none',
+    scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.2 }
+  });
+}
+
+// ============================================================
+// NAV SCROLL
+// ============================================================
+function initNavScroll() {
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 80);
+  }, { passive: true });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Close mobile menu
+      document.getElementById('nav-links').classList.remove('open');
+    });
+  });
+
+  // Mobile menu
+  document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+    document.getElementById('nav-links').classList.toggle('open');
+  });
+}
+
+// ============================================================
+// PARALLAX
+// ============================================================
+function initParallax() {
+  if (isMobile) return;
+  gsap.to('.hero-gradient', {
+    yPercent: 30,
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
+  });
+}
+
+// ============================================================
+// SECTION REVEALS
+// ============================================================
+function initSectionReveals() {
+  gsap.utils.toArray('.section-label').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.6,
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    });
+  });
+
+  gsap.utils.toArray('.section-title').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8,
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    });
+  });
+
+  gsap.utils.toArray('.section-subtext').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.6, delay: 0.15,
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    });
+  });
+
+  // H-cards batch reveal
+  ScrollTrigger.batch('.h-card', {
+    onEnter: batch => gsap.from(batch, { opacity: 0, y: 30, stagger: 0.12, duration: 0.6, ease: 'back.out(1.3)' }),
+    start: 'top 88%',
+    once: true
+  });
+
+  // Filter tags
+  ScrollTrigger.batch('.filter-tag', {
+    onEnter: batch => gsap.from(batch, { opacity: 0, x: -15, stagger: 0.06, duration: 0.4 }),
+    start: 'top 90%',
+    once: true
+  });
+}
+
+// ============================================================
+// PINNED SCROLL STORYTELLING
+// ============================================================
+function initStorySection() {
+  if (isMobile) return;
+  const panels = document.querySelectorAll('.story-panel');
+  const dots = document.querySelectorAll('.story-dot');
+  const container = document.getElementById('story-container');
+
+  ScrollTrigger.create({
+    trigger: container,
+    start: 'top top',
+    end: 'bottom bottom',
+    pin: '#story-viewport',
+    onUpdate: self => {
+      const progress = self.progress;
+      const activeIdx = Math.min(Math.floor(progress * panels.length), panels.length - 1);
+
+      panels.forEach((p, i) => {
+        if (i === activeIdx) {
+          gsap.to(p, { opacity: 1, scale: 1, duration: 0.4 });
+        } else {
+          gsap.to(p, { opacity: 0, scale: 0.95, duration: 0.3 });
+        }
+      });
+
+      dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+    }
+  });
+}
+
+// ============================================================
+// HORIZONTAL SCROLL
+// ============================================================
+function initHorizontalScroll() {
+  if (isMobile) return;
+  const track = document.getElementById('horizontal-track');
+  const section = document.getElementById('horizontal-section');
+
+  const scrollDist = track.scrollWidth - window.innerWidth;
+
+  gsap.to(track, {
+    x: -scrollDist,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: () => `+=${scrollDist}`,
+      scrub: 1,
+      pin: true,
+      anticipatePin: 1
+    }
+  });
+}
+
+// ============================================================
+// SCROLL VELOCITY SKEW
+// ============================================================
+function initVelocitySkew() {
+  if (isMobile) return;
+  const skewEls = gsap.utils.toArray('.skew-el');
+  if (skewEls.length === 0) return;
+
+  const setSkew = gsap.quickSetter(skewEls, 'skewY', 'deg');
+  let currentSkew = 0;
+
+  ScrollTrigger.create({
+    onUpdate: self => {
+      const velocity = self.getVelocity();
+      const skew = THREE ? Math.min(Math.max(velocity / -400, -3), 3) : 0;
+      currentSkew = skew;
+      setSkew(skew);
+    }
+  });
+
+  gsap.ticker.add(() => {
+    if (Math.abs(currentSkew) > 0.01) {
+      currentSkew *= 0.92;
+      setSkew(currentSkew);
+    }
+  });
+}
+
+// ============================================================
+// COUNTER ANIMATIONS
+// ============================================================
+function initCounters() {
+  document.querySelectorAll('.counter-num').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        const target = parseInt(el.getAttribute('data-target'));
+        gsap.to({ val: 0 }, {
+          val: target, duration: 2.2, ease: 'power2.out',
+          onUpdate: function() { el.textContent = Math.round(this.targets()[0].val); }
+        });
+      }
+    });
+  });
+}
+
+// ============================================================
+// INIT EVERYTHING
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  gsap.registerPlugin(ScrollTrigger);
+
+  splitHeroTitle();
+  initPreloader();
+  initThreeHero();
+  initCursor();
+  initNavScroll();
+  initScrollProgress();
+  initParallax();
+
+  // Load posts then init scroll-dependent stuff
+  loadPosts().then ? loadPosts().then(() => {
+    setTimeout(() => {
+      initSectionReveals();
+      initStorySection();
+      initHorizontalScroll();
+      initVelocitySkew();
+      initCounters();
+      initMagnetic();
+    }, 200);
+  }) : (() => {
+    loadPosts();
+    setTimeout(() => {
+      initSectionReveals();
+      initStorySection();
+      initHorizontalScroll();
+      initVelocitySkew();
+      initCounters();
+      initMagnetic();
+    }, 500);
+  })();
+
+  initAdmin();
+});
+</script>
+</body>
+</html>
